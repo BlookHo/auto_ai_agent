@@ -1,0 +1,21 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  username: postgres
+  password:
+  host: postgres
+
+test:
+  <<: *default
+  database: auto_ai_agent_test
+
+production:
+  <<: *default
+  database: auto_ai_agent_production
+  username: auto_ai_agent
+  password: <%= ENV['AUTO_AI_AGENT_DATABASE_PASSWORD'] %>
+
+development:
+  <<: *default
+  database: auto_ai_agent_development

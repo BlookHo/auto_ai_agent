@@ -1,0 +1,351 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, or any plugin's
+ * vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any other CSS/SCSS
+ * files in this directory. Styles in this file should be added after the last require_* statement.
+ * It is generally better to create a new file per style scope.
+ *
+
+
+ */
+
+:root {
+  --primary-color: #3498db;
+  --secondary-color: #2c3e50;
+  --accent-color: #e74c3c;
+  --light-bg: #ecf0f1;
+  --dark-text: #2c3e50;
+  --light-text: #ffffff;
+  --border-radius: 5px;
+  --box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* General Styles */
+body {
+  font-family: 'Roboto', Arial, sans-serif;
+  line-height: 1.6;
+  color: var(--dark-text);
+  background-color: var(--light-bg);
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.page-title {
+  font-size: 2.5rem;
+  color: var(--primary-color);
+  text-align: center;
+  margin: 2rem 0;
+}
+
+/* Header */
+header {
+  background-color: var(--secondary-color);
+  color: var(--light-text);
+  padding: 1rem 0;
+  box-shadow: var(--box-shadow);
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--light-text);
+  text-decoration: none;
+}
+
+.navbar-nav {
+  display: flex;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-item {
+  margin-left: 1.5rem;
+}
+
+.nav-link {
+  color: var(--light-text);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.nav-link:hover {
+  color: var(--primary-color);
+}
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+  border: none;
+  font-weight: 600;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: var(--light-text);
+}
+
+.btn-primary:hover {
+  background-color: #2980b9;
+}
+
+.btn-secondary {
+  background-color: var(--secondary-color);
+  color: var(--light-text);
+}
+
+.btn-secondary:hover {
+  background-color: #1a252f;
+}
+
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+.btn-lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.1rem;
+}
+
+/* Forms */
+.form-container {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  margin: 2rem auto;
+  max-width: 800px;
+}
+
+.form-section {
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+}
+
+.form-control:focus {
+  border-color: var(--primary-color);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+/* Error messages */
+.error-messages {
+  color: var(--accent-color);
+  background-color: rgba(231, 76, 60, 0.1);
+  border-left: 4px solid var(--accent-color);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.error-messages ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.5rem;
+}
+
+/* LLM Provider Selection */
+.llm-provider-selection {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.llm-provider-option {
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: var(--border-radius);
+  transition: border-color 0.3s;
+}
+
+.llm-provider-option:hover {
+  border-color: var(--primary-color);
+}
+
+.provider-description {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 0.5rem;
+}
+
+/* Diagnosis Results */
+.diagnosis-container {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  margin: 2rem auto;
+  max-width: 900px;
+}
+
+.diagnosis-header {
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 1rem;
+}
+
+.diagnosis-title {
+  text-align: center;
+  color: var(--primary-color);
+}
+
+.vehicle-info {
+  text-align: center;
+}
+
+.timestamp {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.diagnosis-section {
+  margin-bottom: 2rem;
+}
+
+.diagnosis-section h3 {
+  color: var(--secondary-color);
+  border-bottom: 2px solid var(--primary-color);
+  padding-bottom: 0.5rem;
+}
+
+.symptoms-content, .diagnosis-content {
+  background-color: var(--light-bg);
+  padding: 1.5rem;
+  border-radius: var(--border-radius);
+}
+
+.diagnosis-result {
+  border-left: 4px solid var(--primary-color);
+  padding-left: 1rem;
+}
+
+.diagnosis-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+/* Provider Cards */
+.providers-section {
+  margin: 3rem 0;
+}
+
+.provider-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.provider-card {
+  background-color: #fff;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 1.5rem;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.provider-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.provider-card h3 {
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+}
+
+/* Diagnostic List */
+.diagnostic-list {
+  margin-top: 1.5rem;
+}
+
+.diagnostic-item {
+  background-color: #fff;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.diagnostic-item h3 {
+  color: var(--secondary-color);
+  margin-bottom: 0.5rem;
+}
+
+.symptoms {
+  margin-bottom: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .llm-provider-selection {
+    grid-template-columns: 1fr;
+  }
+  
+  .provider-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .btn {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+}

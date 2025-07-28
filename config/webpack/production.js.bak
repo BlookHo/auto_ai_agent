@@ -1,0 +1,27 @@
+process.env.NODE_ENV = process.env.NODE_ENV || 'production'
+
+const { environment } = require('@rails/webpacker')
+
+// Production-specific configuration can go here
+// For example, you might want to enable source maps in a specific way:
+// environment.config = environment.config || {}
+// environment.config.devtool = 'source-map'
+
+// Enable compression in production
+const CompressionPlugin = require('compression-webpack-plugin')
+
+// Ensure plugins array exists
+environment.plugins = environment.plugins || []
+
+environment.plugins.push(
+  new CompressionPlugin({
+    test: /\.(js|css|html|json|ico|svg|eot|otf|ttf|map)$/,
+    filename: '[path][base].gz',
+    algorithm: 'gzip',
+    threshold: 0,
+    minRatio: 0.8,
+    deleteOriginalAssets: false
+  })
+)
+
+module.exports = environment

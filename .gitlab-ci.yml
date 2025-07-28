@@ -1,0 +1,82 @@
+image: ruby:3.2.2
+
+variables:
+  POSTGRES_DB: auto_ai_agent_test
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: ""
+  RAILS_ENV: test
+  NODE_ENV: test
+  DATABASE_URL: "postgresql://postgres@postgres:5432/$POSTGRES_DB"
+
+services:
+  - postgres:14-alpine
+  - redis:7-alpine
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+    - vendor/ruby
+    - public/packs
+    - public/assets
+    - tmp/cache
+
+stages:
+  - test
+  - build
+  - deploy
+
+before_script:
+  - apt-get update -qq && apt-get install -y nodejs postgresql-client
+  - gem install bundler --no-document
+  - bundle config set --local path 'vendor/bundle'
+  - bundle install --jobs $(nproc) --retry 3
+  - yarn install --frozen-lockfile
+  - cp config/database.yml.ci config/database.yml
+  - bundle exec rails db:prepare
+  - bundle exec rails assets:precompile
+
+rspec:
+  stage: test
+  script:
+    - bundle exec rspec spec/
+
+eslint:
+  stage: test
+  image: node:18
+  script:
+    - cd client
+    - yarn install --frozen-lockfile
+    - yarn eslint .
+
+build:
+  stage: build
+  script:
+    - bundle exec rails assets:precompile
+    - cd client && yarn build
+  artifacts:
+    paths:
+      - public/
+    expire_in: 1 week
+
+deploy_staging:
+  stage: deploy
+  environment:
+    name: staging
+    url: https://staging.auto-ai-agent.example.com
+  script:
+    - echo "Deploying to staging environment"
+    # Add your deployment commands here
+  only:
+    - develop
+
+deploy_production:
+  stage: deploy
+  environment:
+    name: production
+    url: https://auto-ai-agent.example.com
+  script:
+    - echo "Deploying to production"
+    # Add your deployment commands here
+  only:
+    - main

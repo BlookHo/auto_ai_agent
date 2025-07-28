@@ -1,0 +1,38 @@
+<h1 class="page-title">AI Car Diagnostic System</h1>
+
+<div class="intro-section">
+  <p>Welcome to the AI-powered Car Diagnostic Assistant! Use the power of advanced language models to diagnose vehicle problems quickly and accurately.</p>
+  
+  <div class="featured-buttons">
+    <%= link_to "Start New Diagnostic", new_diagnostic_path, class: "btn btn-primary" %>
+  </div>
+</div>
+
+<div class="providers-section">
+  <h2>Available AI Language Models</h2>
+  <div class="provider-cards">
+    <% @providers.each do |key, provider| %>
+      <div class="provider-card">
+        <h3><%= provider[:name] %></h3>
+        <p><%= provider[:description] %></p>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<% if @diagnostic_sessions.any? %>
+  <div class="recent-diagnostics">
+    <h2>Recent Diagnostics</h2>
+    <div class="diagnostic-list">
+      <% @diagnostic_sessions.each do |session| %>
+        <div class="diagnostic-item">
+          <h3><%= "#{session.vehicle_year} #{session.vehicle_make} #{session.vehicle_model}" %></h3>
+          <p class="symptoms"><strong>Symptoms:</strong> <%= truncate(session.symptoms, length: 100) %></p>
+          <div class="diagnostic-actions">
+            <%= link_to "View Diagnosis", diagnostic_path(session), class: "btn btn-sm btn-secondary" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

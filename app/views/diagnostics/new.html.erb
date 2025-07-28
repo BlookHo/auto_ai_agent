@@ -1,0 +1,61 @@
+<h1 class="page-title">New Car Diagnosis</h1>
+
+<div class="form-container">
+  <%= form_with(model: @diagnostic_session, url: diagnostics_path, local: true) do |form| %>
+    <% if @diagnostic_session.errors.any? %>
+      <div class="error-messages">
+        <h2><%= pluralize(@diagnostic_session.errors.count, "error") %> prevented this diagnosis from being saved:</h2>
+        <ul>
+          <% @diagnostic_session.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="form-section">
+      <h2>Vehicle Information</h2>
+      
+      <div class="form-group">
+        <%= form.label :vehicle_make %>
+        <%= form.select :vehicle_make, @car_makes, { include_blank: "Select make" }, class: "form-control" %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :vehicle_model %>
+        <%= form.text_field :vehicle_model, placeholder: "e.g. Accord, F-150, Model 3", class: "form-control" %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :vehicle_year %>
+        <%= form.number_field :vehicle_year, min: 1900, max: Time.current.year + 1, class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2>Describe the Problem</h2>
+      <div class="form-group">
+        <%= form.label :symptoms, "Describe what's happening with your vehicle" %>
+        <%= form.text_area :symptoms, rows: 5, placeholder: "Be specific about what you're experiencing. Include any sounds, smells, performance issues, warning lights, when the problem occurs, and for how long. The more detail, the better the diagnosis.", class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2>Select AI Model</h2>
+      <div class="llm-provider-selection">
+        <% @providers.each do |key, provider| %>
+          <div class="llm-provider-option">
+            <%= radio_button_tag :llm_provider, key, key == :openai %>
+            <%= label_tag "llm_provider_#{key}", provider[:name] %>
+            <p class="provider-description"><%= provider[:description] %></p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <%= form.submit "Get Diagnosis", class: "btn btn-primary btn-lg" %>
+      <%= link_to "Cancel", root_path, class: "btn btn-secondary" %>
+    </div>
+  <% end %>
+</div>

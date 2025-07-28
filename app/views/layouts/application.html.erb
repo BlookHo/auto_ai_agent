@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>AI Car Diagnostics</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#343541">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <!-- Favicon with cache-busting query parameter -->
+    <link rel="icon" href="/favicon.ico?<%= Time.now.to_i %>" type="image/x-icon" />
+    <link rel="shortcut icon" href="/favicon.ico?<%= Time.now.to_i %>" type="image/x-icon" />
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <%= stylesheet_link_tag "application", media: 'all' %>
+    
+    <!-- Webpacker packs -->
+    <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload', defer: true %>
+    <%= stylesheet_pack_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+  </head>
+
+  <body style="margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; min-height: 100vh; background-color: #343541;">
+    <div id="root">
+      <!-- Loading indicator that will be replaced by React -->
+      <div style="display: flex; justify-content: center; align-items: center; height: 100vh; color: white;">
+        <div>Loading AI Car Diagnostics...</div>
+      </div>
+    </div>
+
+    <!-- Flash messages -->
+    <% if notice %>
+      <div class="alert alert-success">
+        <%= notice %>
+      </div>
+    <% end %>
+    
+    <% if alert %>
+      <div class="alert alert-danger">
+        <%= alert %>
+      </div>
+    <% end %>
+      
+      <%= yield %>
+    </main>
+
+    <footer>
+      <div class="container">
+        <p class="text-center"> AI Car Diagnostics - Using top LLM models for automotive diagnostics</p>
+      </div>
+    </footer>
+  </body>
+</html>
