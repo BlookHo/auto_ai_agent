@@ -5,7 +5,16 @@ Rails.application.routes.draw do
   
   # API endpoints
   namespace :api do
-    resources :diagnostics, only: [:index, :create, :show], path: 'diagnostic'
+    namespace :v1 do
+      # Authentication routes
+      post 'auth/register', to: 'auth#register'
+      post 'auth/login', to: 'auth#login'
+      get 'auth/me', to: 'auth#me'
+      
+      # Protected resources
+      resources :diagnostics, only: [:index, :create, :show], path: 'diagnostic'
+      resources :users, except: [:new, :edit]
+    end
   end
   
   # Set root to serve the React app

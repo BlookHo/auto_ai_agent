@@ -1,7 +1,7 @@
 # Auto AI Agent - Development Plan
 
 ## Project Overview
-Web application for automotive experts to diagnose vehicle issues using AI with RAG capabilities.
+A web application that enables automotive experts to diagnose vehicle issues using advanced AI with RAG (Retrieval-Augmented Generation) capabilities. The system provides a structured diagnosis flow with AI-powered recommendations and supports high concurrency for professional use.
 
 ## Core Requirements
 
@@ -10,80 +10,60 @@ Web application for automotive experts to diagnose vehicle issues using AI with 
    - Authentication & authorization
    - Role-based access control
 
-2. **Vehicle Data**
-   - Vehicle information storage
-   - Maintenance history
+2. **Vehicle & Issue Management**
+   - Vehicle information storage (make, model, year, VIN, etc.)
+   - Issue categorization and documentation
+   - Diagnosis history and tracking
+   - Exploitation conditions logging
 
-3. **Diagnosis**
-   - AI-powered analysis
-   - RAG-enhanced recommendations
+3. **AI-Powered Diagnosis**
+   - Multi-step diagnosis flow
+   - LLM integration (OpenAI GPT-4/Claude 3)
+   - RAG system for enhanced accuracy
+   - Dialogue-based interaction system
+   - Diagnosis history and versioning
 
-### Non-Functional
-- <2s response time
-- 100k+ concurrent users
-- 99.9% uptime
+4. **Knowledge Base**
+   - Technical documentation storage
+   - Service bulletins and recalls
+   - Common issues database
+   - External data source integration
+
+### Non-Functional Requirements
+- **Performance**: <2s response time for AI responses
+- **Scalability**: Support for 100k+ concurrent users
+- **Reliability**: 99.9% uptime SLA
+- **Security**: GDPR/CCPA compliance
+- **Observability**: Comprehensive logging and monitoring
 
 ## Technical Stack
 
 ### Backend
-- Ruby on Rails 7.1+
-- PostgreSQL + pgvector
-- Redis
-- Sidekiq (background jobs)
-- ActionCable (WebSockets)
+- **Framework**: Ruby on Rails 7.1+ (Ruby 3.2+)
+- **Database**: PostgreSQL 15+ with pgvector
+- **Caching & Pub/Sub**: Redis 7.0+
+- **Background Jobs**: Sidekiq 7.0+
+- **Search**: Elasticsearch 8.0+
+- **API**: JSON:API specification
+- **Real-time**: ActionCable (WebSockets)
 
 ### Frontend
-- React 18+ with TypeScript
+- **Core**: React 18+ with TypeScript
 - **State Management**:
-  - Redux Toolkit: UI state and business logic
-  - React Query: Server state and data fetching
-- Material-UI v5
-- React Hook Form for form handling
-- React Router v6 for navigation
+  - Redux Toolkit (UI state)
+  - React Query (Server state)
+- **UI Components**: Material-UI v5
+- **Form Handling**: React Hook Form
+- **Routing**: React Router v6
+- **Performance**: Code splitting, lazy loading, memoization
 
-### AI/ML
-- OpenAI GPT-4/Claude 3
-- Vector database
-- Document processing
+### AI/ML Components
+- **LLM**: OpenAI GPT-4/Claude 3
+- **Vector Database**: pgvector with HNSW index
+- **Document Processing**: Unstructured.io
+- **Prompt Engineering**: LangChain
 
-## Version Control
-
-For detailed version control strategy, see [Version Control Documentation](./version_control.md).
-
-Key points:
-- Git-based workflow
-- GitLab recommended for hosting
-- Branch protection and code reviews required
-- CI/CD integration
-
-## State Management Architecture
-
-### Redux Toolkit (Client State)
-- **Purpose**: Manage UI state and business logic
-- **Use Cases**:
-  - Authentication state
-  - UI theme and preferences
-  - Form state management
-  - Complex business logic flows
-  - Global application state
-- **Implementation**:
-  - Slices for domain-specific state
-  - RTK Query for API interactions requiring cache persistence
-  - Redux Persist for persisting critical state
-
-### React Query (Server State)
-- **Purpose**: Handle server state and data fetching
-- **Use Cases**:
-  - Data fetching and caching
-  - Background data updates
-  - Request deduplication
-  - Pagination and infinite queries
-  - Optimistic updates
-- **Implementation**:
-  - Custom query hooks for API endpoints
-  - Query invalidation strategies
-  - Prefetching for better UX
-  - Optimistic updates for responsive UIs
+## Architecture
 
 ### Data Flow
 1. **Data Fetching**: React Query handles all API calls and caching
@@ -93,43 +73,58 @@ Key points:
    - Optimistic updates through React Query
    - Synchronized updates to Redux state when needed
 
-## Performance Optimization Strategies
+## Performance Optimization
 
-### Database Optimization
-- Implement database indexing for frequently queried fields
-- Use database query optimization (includes, select, and pluck)
-- Implement database read replicas for high read operations
-- Use database connection pooling
-- Implement query caching for complex reports
+### Database
+- Indexing strategy (B-tree, GIN, GiST)
+- Query optimization and caching
+- Read replicas for scaling
+- Connection pooling
 
-### Caching Strategy
-- Fragment caching for complex views
-- Russian Doll caching for nested resources
-- Low-level caching for expensive calculations
-- HTTP caching with ETags and Last-Modified headers
-- Redis for session storage and cache
+### Application
+- API response caching
+- Background job processing
+- Rate limiting and throttling
+- Efficient serialization
 
-### Background Processing
-- Use Sidekiq for all non-critical path operations
-- Implement rate limiting for external API calls
-- Queue management with priority queues
-- Job idempotency and retry mechanisms
-
-### Frontend Performance
+### Frontend
 - Code splitting and lazy loading
-- Asset pipeline optimization
-- Server-side rendering where beneficial
-- Client-side caching strategies
-- Optimistic UI updates
+- Bundle optimization
+- Client-side caching
+- Service workers for offline support
 
-### AI/ML Performance
-- Batch processing of documents for embedding
-- Vector search optimization
-- Cache AI model responses
-- Implement request batching for AI API calls
-- Use streaming responses for long-running AI operations
+## Monitoring & Maintenance
+- Application performance monitoring
+- Error tracking and alerting
+- Log aggregation and analysis
+- Regular security audits
 
-## Performance Testing Strategy
+## Risk Management
+1. **LLM Response Quality**
+   - Strict validation and fallback mechanisms
+   - Continuous monitoring and prompt tuning
+
+2. **Scalability**
+   - Horizontal scaling design
+   - Load testing and optimization
+
+3. **Data Privacy**
+   - Data anonymization
+   - Regular security assessments
+
+## Success Metrics
+- Average diagnosis time
+- User satisfaction score
+- System accuracy rate
+- Concurrent user capacity
+- Mean time between failures
+
+## Future Enhancements
+1. Mobile application
+2. Diagnostic tools integration
+3. Predictive maintenance
+4. Multi-language support
+5. Advanced analytics
 
 ### Testing Approach
 - **Load Testing**: Simulate 100k+ concurrent users
@@ -153,31 +148,186 @@ Key points:
 
 ## Development Phases
 
-### Phase 1: Foundation (3 weeks)
-- Project setup
-- Database design
-- User authentication
+### Phase 0: Version Control Setup (Week 0) - Critical
+- [x] Initialize local Git repository
+- [x] Configure Git with username (BlookHo) and email (zoneiva@gmail.com)
+- [ ] Create .gitignore for proper file exclusions
+- [ ] Create GitHub repository
+- [ ] Add remote origin and push initial code
+- [ ] Set up branch protection rules
+- [ ] Configure GitHub Actions for CI/CD
 
-### Phase 2: Core Features (5 weeks)
-- Vehicle management
-- Issue reporting
-- Basic AI diagnosis
+### Phase 1: Foundation & Core Infrastructure (Weeks 1-4) - High Priority
 
-### Phase 3: Advanced Features (4 weeks)
-- RAG implementation
-- Enhanced diagnosis
-- Improved UX
+#### 1. Project Setup (2 weeks)
+- [x] Initialize Rails API with React frontend
+- [ ] Configure CI/CD pipeline
+- [ ] Set up testing frameworks (RSpec, Jest)
+- [ ] Implement basic monitoring (Sentry, Datadog)
 
-### Phase 4: Scaling (4 weeks)
-- Performance optimization
-- Monitoring
-- Documentation
+#### 2. User Management (2 weeks)
+- [x] Implement JWT authentication
+- [x] Set up role-based access control (Pundit)
+- [x] Create user management interface (React)
+- [x] Implement login/logout flow
+- [ ] Add user registration
+- [ ] Implement password reset functionality
 
-## Timeline
-- **Total Duration**: 16 weeks
-- **Effort**: 54 person-weeks
+### Phase 2: Core Features (Weeks 5-9) - High Priority
 
-## Next Steps
-1. Review and finalize requirements
-2. Set up development environment
-3. Begin database implementation
+#### 1. Vehicle Management (2 weeks)
+- [ ] Design and implement database schema
+- [ ] Create vehicle information forms
+- [ ] Implement vehicle search and filtering
+- [ ] Add vehicle image upload
+
+#### 2. Issue Management (2 weeks)
+- [ ] Develop issue reporting interface
+- [ ] Implement issue categorization
+- [ ] Create diagnosis history tracking
+- [ ] Add issue status workflow
+
+#### 3. Basic AI Integration (1 week)
+- [ ] Set up LLM API integration
+- [ ] Create initial prompt templates
+- [ ] Implement basic chat interface
+
+### Phase 3: Advanced AI Features (Weeks 10-14) - Medium Priority
+
+#### 1. RAG Implementation (2 weeks)
+- [ ] Set up vector database (pgvector)
+- [ ] Implement document ingestion pipeline
+- [ ] Create retrieval mechanisms
+
+#### 2. Enhanced Diagnosis (2 weeks)
+- [ ] Develop multi-step diagnosis flow
+- [ ] Implement context management
+- [ ] Create follow-up question system
+
+### Phase 4: Knowledge Base & Integration (Weeks 15-18) - Medium Priority
+
+#### 1. Knowledge Base Implementation (2 weeks)
+- [ ] Set up document storage
+- [ ] Implement search functionality
+- [ ] Create admin interface for knowledge management
+
+#### 2. API Integrations (2 weeks)
+- [ ] Implement third-party API connections
+- [ ] Create webhook handlers
+- [ ] Set up data synchronization
+
+### Phase 5: Polish & Optimization (Weeks 19-20) - High Priority
+
+#### 1. Performance Optimization (1 week)
+- [ ] Implement caching strategies
+- [ ] Optimize database queries
+- [ ] Fine-tune frontend performance
+
+#### 2. Testing & QA (1 week)
+- [ ] Write comprehensive test suite
+- [ ] Perform security audit
+- [ ] Conduct user acceptance testing
+
+## Progress Tracking
+
+| Phase | Task | Status |
+|-------|------|--------|
+| 1.1 | Project Setup | 🔄 In Progress |
+| 1.2 | User Management | ✅ Completed |
+| 2.1 | Vehicle Management | 🚫 Not Started |
+| 2.2 | Issue Management | 🚫 Not Started |
+| 2.3 | Basic AI Integration | 🚫 Not Started |
+| 3.1 | RAG Implementation | 🚫 Not Started |
+| 3.2 | Enhanced Diagnosis | 🚫 Not Started |
+| 4.1 | Knowledge Base | 🚫 Not Started |
+| 4.2 | API Integrations | 🚫 Not Started |
+| 5.1 | Performance Optimization | 🚫 Not Started |
+| 5.2 | Testing & QA | 🚫 Not Started |
+
+**Legend**:
+- ✅ Completed
+- 🔄 In Progress
+- 🚫 Not Started
+
+### Phase 2: Core Features (Weeks 5-9) - High Priority
+1. **Vehicle Management**
+   - Design and implement database schema
+   - Create vehicle information forms
+   - Implement vehicle search and filtering
+   - **Effort**: 2 weeks
+
+2. **Issue Management**
+   - Develop issue reporting interface
+   - Implement issue categorization
+   - Create diagnosis history tracking
+   - **Effort**: 2 weeks
+
+3. **Basic AI Integration**
+   - Set up LLM API integration
+   - Create initial prompt templates
+   - Implement basic chat interface
+   - **Effort**: 1 week
+
+### Phase 3: Advanced AI Features (Weeks 10-14) - Medium Priority
+1. **RAG Implementation**
+   - Set up vector database (pgvector)
+   - Implement document ingestion pipeline
+   - Create retrieval mechanisms
+   - **Effort**: 2 weeks
+
+2. **Enhanced Diagnosis**
+   - Develop multi-step diagnosis flow
+   - Implement context management
+   - Create follow-up question system
+   - **Effort**: 2 weeks
+
+3. **Knowledge Base Integration**
+   - Set up document storage
+   - Implement search functionality
+   - Create admin interface for knowledge management
+   - **Effort**: 1 week
+
+### Phase 4: Optimization & Scaling (Weeks 15-18) - High Priority
+1. **Performance Optimization**
+   - Database query optimization
+   - Implement caching strategies
+   - Frontend performance improvements
+   - **Effort**: 2 weeks
+
+2. **Scalability & Reliability**
+   - Set up database read replicas
+   - Implement rate limiting
+   - Configure auto-scaling
+   - **Effort**: 1 week
+
+3. **Security & Compliance**
+   - Security audit
+   - Data encryption implementation
+   - Compliance documentation
+   - **Effort**: 1 week
+
+## Timeline Summary
+- **Total Duration**: 18 weeks
+- **Total Effort**: 72 person-weeks
+- **Team Size**: 4-5 developers
+
+## Risk Mitigation
+1. **Technical Debt**
+   - Allocate 20% buffer time in each phase
+   - Regular code reviews
+   - Automated testing coverage
+
+2. **AI Model Performance**
+   - Implement fallback mechanisms
+   - Continuous monitoring of response quality
+   - Regular prompt optimization
+
+3. **Scalability**
+   - Early performance testing
+   - Modular architecture
+   - Cloud-native deployment
+
+## Success Criteria
+- MVP ready by end of Phase 2 (Week 9)
+- Beta release at end of Phase 3 (Week 14)
+- Production release after Phase 4 (Week 19)

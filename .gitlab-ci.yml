@@ -7,10 +7,14 @@ variables:
   RAILS_ENV: test
   NODE_ENV: test
   DATABASE_URL: "postgresql://postgres@postgres:5432/$POSTGRES_DB"
+  HEROKU_APP_STAGING: auto-ai-agent-staging
+  HEROKU_APP_PRODUCTION: auto-ai-agent-production
+  HEROKU_DEPLOY_USER: git.heroku.com
 
 services:
   - postgres:14-alpine
   - redis:7-alpine
+  - selenium/standalone-chrome:latest
 
 cache:
   key: ${CI_COMMIT_REF_SLUG}
@@ -23,11 +27,14 @@ cache:
 
 stages:
   - test
+  - security
+  - quality
   - build
   - deploy
+  - post-deploy
 
 before_script:
-  - apt-get update -qq && apt-get install -y nodejs postgresql-client
+  - apt-get update -qq && apt-get install -y nodejs postgresql-client wget
   - gem install bundler --no-document
   - bundle config set --local path 'vendor/bundle'
   - bundle install --jobs $(nproc) --retry 3
@@ -36,10 +43,15 @@ before_script:
   - bundle exec rails db:prepare
   - bundle exec rails assets:precompile
 
+# Test Jobs
 rspec:
   stage: test
   script:
-    - bundle exec rspec spec/
+    - bundle exec rspec spec/ --format documentation --format RspecJunitFormatter --out rspec.xml
+  artifacts:
+    when: always
+    reports:
+      junit: rspec.xml
 
 eslint:
   stage: test
@@ -47,36 +59,108 @@ eslint:
   script:
     - cd client
     - yarn install --frozen-lockfile
-    - yarn eslint .
+    - yarn eslint . --format junit -o ../eslint-report.xml
+  artifacts:
+    when: always
+    reports:
+      junit: eslint-report.xml
 
+# Security Jobs
+brakeman:
+  stage: security
+  script:
+    - gem install brakeman
+    - brakeman -o brakeman-output.tabs
+    - cat brakeman-output.tabs
+  allow_failure: true
+  artifacts:
+    paths: [brakeman-output.tabs]
+
+gem_audit:
+  stage: security
+  script:
+    - gem install bundler-audit
+    - bundle-audit update
+    - bundle-audit check --ignore CVE-2015-9284 || true
+  allow_failure: true
+
+# Quality Jobs
+rubocop:
+  stage: quality
+  script:
+    - gem install rubocop rubocop-rails rubocop-rspec
+    - rubocop --format progress --format json --out rubocop-result.json
+  artifacts:
+    reports:
+      codequality: rubocop-result.json
+  allow_failure: true
+
+# Build Job
 build:
   stage: build
+  dependencies:
+    - rspec
+    - eslint
   script:
     - bundle exec rails assets:precompile
-    - cd client && yarn build
+    - cd client && yarn build && cd ..
+    - tar -czf build_${CI_COMMIT_SHORT_SHA}.tar.gz public/
   artifacts:
     paths:
-      - public/
+      - build_${CI_COMMIT_SHORT_SHA}.tar.gz
     expire_in: 1 week
 
+# Deployment Jobs
 deploy_staging:
   stage: deploy
   environment:
     name: staging
-    url: https://staging.auto-ai-agent.example.com
+    url: https://${HEROKU_APP_STAGING}.herokuapp.com
+  before_script:
+    - wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
+    - echo "machine git.heroku.com" > ~/.netrc
+    - echo "  login $HEROKU_EMAIL" >> ~/.netrc
+    - echo "  password $HEROKU_API_KEY" >> ~/.netrc
+    - chmod 600 ~/.netrc
   script:
-    - echo "Deploying to staging environment"
-    # Add your deployment commands here
+    - git remote add heroku https://git.heroku.com/${HEROKU_APP_STAGING}.git
+    - git push -f heroku ${CI_COMMIT_SHA}:refs/heads/main
   only:
     - develop
+  dependencies: []
 
 deploy_production:
   stage: deploy
   environment:
     name: production
-    url: https://auto-ai-agent.example.com
+    url: https://${HEROKU_APP_PRODUCTION}.herokuapp.com
+  before_script:
+    - wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
+    - echo "machine git.heroku.com" > ~/.netrc
+    - echo "  login $HEROKU_EMAIL" >> ~/.netrc
+    - echo "  password $HEROKU_API_KEY" >> ~/.netrc
+    - chmod 600 ~/.netrc
   script:
-    - echo "Deploying to production"
-    # Add your deployment commands here
+    - git remote add heroku https://git.heroku.com/${HEROKU_APP_PRODUCTION}.git
+    - git push -f heroku ${CI_COMMIT_SHA}:refs/heads/main
+  when: manual
   only:
     - main
+  dependencies: []
+
+# Post-deployment Tests
+browser_tests:
+  stage: post-deploy
+  image: ruby:3.2.2
+  services:
+    - selenium/standalone-chrome:latest
+  variables:
+    SELENIUM_REMOTE_URL: http://selenium__standalone-chrome:4444/wd/hub
+    TEST_APP_URL: ${CI_ENVIRONMENT_URL}
+  script:
+    - apt-get update -qq && apt-get install -y xvfb
+    - bundle exec rspec spec/features --tag type:feature
+  only:
+    - main
+    - develop
+

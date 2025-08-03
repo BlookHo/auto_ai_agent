@@ -18,6 +18,11 @@ gem "cssbundling-rails"
 gem "jbuilder"
 gem "rack-cors"
 
+# Authentication & Authorization
+gem 'bcrypt', '~> 3.1.7'
+gem 'jwt', '~> 2.7'
+gem 'pundit', '~> 2.3'
+
 # AI Integration
 gem "ruby-openai"
 
