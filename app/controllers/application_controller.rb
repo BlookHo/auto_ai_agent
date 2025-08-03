@@ -34,6 +34,14 @@ class ApplicationController < ActionController::Base
       format.html { redirect_to root_path, alert: 'Record not found' }
     end
   end
+  
+  def handle_favicon
+    if request.path == '/favicon.ico'
+      send_file Rails.root.join('public', 'favicon.ico'), 
+                type: 'image/x-icon', 
+                disposition: 'inline'
+    end
+  end
 end
 
 # Base controller for API endpoints
@@ -66,17 +74,5 @@ class Api::V1::BaseController < ActionController::API
   
   def render_errors(errors, status = :unprocessable_entity)
     render json: { errors: errors }, status: status
-  end
-end
-  end
-  
-  private
-  
-  def handle_favicon
-    if request.path == '/favicon.ico'
-      send_file Rails.root.join('public', 'favicon.ico'), 
-                type: 'image/x-icon', 
-                disposition: 'inline'
-    end
   end
 end
