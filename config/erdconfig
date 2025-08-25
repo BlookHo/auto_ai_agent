@@ -1,0 +1,54 @@
+# ERD Configuration
+# Output file format (dot, pdf, png, etc.)
+output_file: erd.pdf
+
+# Output file name (without extension)
+filename: car_diagnostics_erd
+
+# Diagram title
+title: "Car Diagnostics System - Database Schema"
+
+# Use colors
+disconnected: true
+polymorphism: true
+notation: simple
+attributes: false
+
+# Colors and styling
+node_margin: 0.5
+
+# Model configuration
+attributes:
+  - content: false
+    foreign_key: true
+    inheritance: true
+
+disconnected: false
+filename: "car_diagnostics_erd"
+
+# Colors
+colors:
+  primary: "#2c3e50"
+  secondary: "#3498db"
+  background: "#f8f9fa"
+  title: "#2c3e50"
+  line: "#7f8c8d"
+  label: "#2c3e50"
+  header: "#3498db"
+  font: "#2c3e50"
+
+# Layout options
+layout: dot
+
+dot:
+  rankdir: TB
+  nodesep: 0.5
+  ranksep: 0.5
+  splines: polyline
+
+# Show or hide attributes
+show_foreign_keys: true
+show_indexes: false
+
+# Exclude models (if needed)
+exclude: []

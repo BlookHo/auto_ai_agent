@@ -1,0 +1,95 @@
+name: React CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'client/**/*'
+      - '.github/workflows/react.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'client/**/*'
+      - '.github/workflows/react.yml'
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+        cache: 'yarn'
+        cache-dependency-path: 'client/yarn.lock'
+    
+    - name: Install dependencies
+      working-directory: ./client
+      run: yarn install --frozen-lockfile
+    
+    - name: Run tests
+      working-directory: ./client
+      run: yarn test --watchAll=false --passWithNoTests
+    
+    - name: Run ESLint
+      working-directory: ./client
+      run: yarn lint
+    
+    - name: Run type check
+      working-directory: ./client
+      run: yarn type-check
+
+  build:
+    name: Build
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+        cache: 'yarn'
+        cache-dependency-path: 'client/yarn.lock'
+    
+    - name: Install dependencies
+      working-directory: ./client
+      run: yarn install --frozen-lockfile
+    
+    - name: Build application
+      working-directory: ./client
+      run: yarn build
+      env:
+        REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL || 'http://localhost:3001' }}
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: client-build
+        path: client/build
+        retention-days: 5
+
+  # This job is a placeholder for deployment to a staging environment
+  # You'll need to configure your specific deployment setup
+  deploy-staging:
+    name: Deploy to Staging
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Deploy to Staging
+      run: echo "Deploying to staging..."
+      # Add your deployment steps here
+      # For example, you might use SSH to deploy to your server
+      # or use a service like Vercel, Netlify, or AWS Amplify

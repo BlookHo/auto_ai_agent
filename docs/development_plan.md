@@ -151,9 +151,9 @@ A web application that enables automotive experts to diagnose vehicle issues usi
 ### Phase 0: Version Control Setup (Week 0) - Critical
 - [x] Initialize local Git repository
 - [x] Configure Git with username (BlookHo) and email (zoneiva@gmail.com)
-- [ ] Create .gitignore for proper file exclusions
-- [ ] Create GitHub repository
-- [ ] Add remote origin and push initial code
+- [x] Create .gitignore for proper file exclusions
+- [x] Create GitHub repository
+- [x] Add remote origin and push initial code
 - [ ] Set up branch protection rules
 - [ ] Configure GitHub Actions for CI/CD
 

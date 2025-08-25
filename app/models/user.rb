@@ -9,6 +9,11 @@ class User < ApplicationRecord
   validates :password, length: { minimum: 8 }, if: -> { new_record? || !password.nil? }
   validates :role, inclusion: { in: ROLES, message: "%{value} is not a valid role" }
 
+  # Associations
+  has_many :cars, dependent: :destroy
+  has_many :symptoms, foreign_key: 'author_id', dependent: :nullify
+  has_many :diagnostic_sessions, through: :cars
+
   before_validation :set_default_role
 
   def generate_jwt

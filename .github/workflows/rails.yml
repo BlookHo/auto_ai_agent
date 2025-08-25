@@ -1,0 +1,110 @@
+name: Rails CI
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - '**/*.rb'
+      - 'Gemfile*'
+      - 'config/database.yml'
+      - 'db/schema.rb'
+      - 'db/migrate/*.rb'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - '**/*.rb'
+      - 'Gemfile*'
+      - 'config/database.yml'
+      - 'db/schema.rb'
+      - 'db/migrate/*.rb'
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: auto_ai_agent_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.0.7'
+        bundler-cache: true
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+        cache: 'yarn'
+
+    - name: Install PostgreSQL client
+      run: |
+        sudo apt-get -yqq install libpq-dev
+
+    - name: Set up database
+      env:
+        RAILS_ENV: test
+        DATABASE_URL: postgres://postgres:postgres@localhost:5432/auto_ai_agent_test
+      run: |
+        cp config/database.yml.example config/database.yml
+        bundle exec rails db:create
+        bundle exec rails db:schema:load
+
+    - name: Run tests
+      env:
+        RAILS_ENV: test
+        DATABASE_URL: postgres://postgres:postgres@localhost:5432/auto_ai_agent_test
+        RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+      run: |
+        bundle exec rspec
+
+    - name: Run security audit
+      run: |
+        gem install bundler-audit
+        bundle audit check --update
+
+    - name: Run RuboCop
+      run: |
+        gem install rubocop
+        rubocop --parallel
+
+  build:
+    name: Build
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.0.7'
+        bundler-cache: true
+        
+    - name: Build assets
+      run: |
+        bundle exec rake assets:precompile
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: assets
+        path: public/assets
+        retention-days: 5

@@ -17,6 +17,7 @@ gem "cssbundling-rails"
 # API and JSON building
 gem "jbuilder"
 gem "rack-cors"
+gem 'active_model_serializers'
 
 # Authentication & Authorization
 gem 'bcrypt', '~> 3.1.7'
@@ -38,6 +39,7 @@ group :development do
   gem "listen", "~> 3.7"
   gem "spring"
   gem "web-console"
+  gem 'rails-erd', '~> 1.7', '>= 1.7.2', require: false
 end
 
 gem "tzinfo-data", platforms: [:mswin, :mingw, :x64_mingw, :jruby]

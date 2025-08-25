@@ -1,0 +1,27 @@
+# ERD Configuration
+title: "Car Diagnostics System - Database Schema"
+filename: car_diagnostics_erd
+output: png
+
+disconnected: true
+polymorphism: true
+notation: simple
+attributes: foreign_keys,foreign_keys,timestamps
+
+# Colors
+colors:
+  primary: "#2c3e50"
+  background: "#f8f9fa"
+  title: "#2c3e50"
+  line: "#7f8c8d"
+  label: "#2c3e50"
+  header: "#3498db"
+  font: "#2c3e50"
+
+# Layout
+dot:
+  layout: dot
+  rankdir: TB
+  nodesep: 0.5
+  ranksep: 0.5
+  splines: polyline
