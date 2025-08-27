@@ -3,8 +3,7 @@ class MaintenanceRecord < ApplicationRecord
   belongs_to :car
   belongs_to :performed_by, class_name: 'User', optional: true
   
-  # Serialize JSON fields
-  serialize :receipts, Array
+  # receipts is a JSONB column in PostgreSQL
   
   # Validations
   validates :service_type, :performed_on, presence: true

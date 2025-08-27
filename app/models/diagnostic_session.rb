@@ -2,21 +2,18 @@ class DiagnosticSession < ApplicationRecord
   # Constants
   DIAGNOSIS_STATUSES = %w[awaiting_analysis in_progress pending_review confirmed].freeze
   
-  # Serialize JSON fields
-  serialize :diagnostic_codes, Array
-  serialize :ai_suggestions, Hash
+  # JSON fields are handled natively by PostgreSQL jsonb type
   
   # Associations
   belongs_to :car
   belongs_to :assigned_expert, class_name: 'User', optional: true
-  has_one :diag, dependent: :destroy
+  belongs_to :diag, optional: true
   has_many :symptoms, through: :car
   
   # Delegations
   delegate :user, to: :car
   
   # Validations
-  validates :symptoms, presence: true
   validates :car_id, presence: true
   validates :diagnosis_status, inclusion: { in: DIAGNOSIS_STATUSES }
   validates :confidence_score, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 }, allow_nil: true

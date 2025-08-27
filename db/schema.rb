@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_08_27_152000) do
+ActiveRecord::Schema[7.1].define(version: 2025_08_27_165521) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -36,8 +36,18 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_27_152000) do
     t.date "registration_date"
     t.date "insurance_expiry"
     t.text "notes"
+    t.bigint "user_id", null: false
     t.index ["license_plate"], name: "index_cars_on_license_plate", unique: true
+    t.index ["user_id"], name: "index_cars_on_user_id"
     t.index ["vin"], name: "index_cars_on_vin", unique: true
+  end
+
+  create_table "causes", force: :cascade do |t|
+    t.bigint "diag_id", null: false
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["diag_id"], name: "index_causes_on_diag_id", unique: true
   end
 
   create_table "diagnostic_sessions", force: :cascade do |t|
@@ -74,6 +84,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_27_152000) do
     t.decimal "estimated_repair_cost", precision: 10, scale: 2
     t.integer "estimated_repair_time"
     t.string "severity"
+    t.bigint "expert_id"
+    t.index ["expert_id"], name: "index_diags_on_expert_id"
   end
 
   create_table "maintenance_records", force: :cascade do |t|
@@ -124,7 +136,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_27_152000) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "cars", "users"
+  add_foreign_key "causes", "diags"
   add_foreign_key "diagnostic_sessions", "users", column: "assigned_expert_id"
+  add_foreign_key "diags", "users", column: "expert_id"
   add_foreign_key "maintenance_records", "cars"
   add_foreign_key "maintenance_records", "users", column: "performed_by_id"
 end
