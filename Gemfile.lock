@@ -195,6 +195,7 @@ GEM
       racc (~> 1.4)
     nokogiri (1.15.7-x86_64-linux)
       racc (~> 1.4)
+    pg (1.6.1)
     pp (0.6.2)
       prettyprint
     prettyprint (0.2.0)
@@ -294,11 +295,6 @@ GEM
       actionpack (>= 6.1)
       activesupport (>= 6.1)
       sprockets (>= 3.0.0)
-    sqlite3 (1.7.3-aarch64-linux)
-    sqlite3 (1.7.3-arm-linux)
-    sqlite3 (1.7.3-arm64-darwin)
-    sqlite3 (1.7.3-x86_64-darwin)
-    sqlite3 (1.7.3-x86_64-linux)
     stringio (3.1.7)
     strscan (3.1.5)
     tailwindcss-rails (2.0.33-aarch64-linux)
@@ -354,6 +350,7 @@ DEPENDENCIES
   jbuilder
   jwt (~> 2.7)
   listen (~> 3.7)
+  pg (~> 1.5)
   pry-byebug
   pry-rails
   puma (~> 6.4.0)
@@ -365,7 +362,6 @@ DEPENDENCIES
   ruby-openai
   spring
   sprockets-rails
-  sqlite3 (~> 1.4)
   tailwindcss-rails (~> 2.0.4)
   tzinfo-data
   web-console

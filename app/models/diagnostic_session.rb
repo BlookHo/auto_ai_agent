@@ -1,6 +1,14 @@
 class DiagnosticSession < ApplicationRecord
+  # Constants
+  DIAGNOSIS_STATUSES = %w[awaiting_analysis in_progress pending_review confirmed].freeze
+  
+  # Serialize JSON fields
+  serialize :diagnostic_codes, Array
+  serialize :ai_suggestions, Hash
+  
   # Associations
   belongs_to :car
+  belongs_to :assigned_expert, class_name: 'User', optional: true
   has_one :diag, dependent: :destroy
   has_many :symptoms, through: :car
   
@@ -10,12 +18,8 @@ class DiagnosticSession < ApplicationRecord
   # Validations
   validates :symptoms, presence: true
   validates :car_id, presence: true
-  validates :vehicle_make, presence: true
-  validates :vehicle_model, presence: true
-  validates :vehicle_year, presence: true,
-                         numericality: { only_integer: true,
-                                        greater_than: 1900,
-                                        less_than_or_equal_to: Time.current.year + 1 }
+  validates :diagnosis_status, inclusion: { in: DIAGNOSIS_STATUSES }
+  validates :confidence_score, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 }, allow_nil: true
 
   # Callbacks
   before_validation :set_default_status, on: :create

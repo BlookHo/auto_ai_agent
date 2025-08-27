@@ -1,27 +1,33 @@
-# SQLite. Versions 3.8.0 and up are supported.
+# PostgreSQL. Versions 9.3 and up are supported.
 #
-# Install the sqlite3 gem:
-#   gem install sqlite3
+# Install the pg gem:
+#   gem install pg
 #
 # Configure Using Gemfile
-# gem "sqlite3"
+# gem "pg"
 #
 default: &default
-  adapter: sqlite3
+  adapter: postgresql
+  encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  timeout: 5000
+  username: <%= ENV['DB_USERNAME'] %>
+  password: <%= ENV['DB_PASSWORD'] %>
+  host: <%= ENV['DB_HOST'] %>
+  port: <%= ENV['DB_PORT'] %>
 
 development:
   <<: *default
-  database: db/car_diagnostics_development.sqlite3
+  database: car_diagnostics_development
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: db/car_diagnostics_test.sqlite3
+  database: car_diagnostics_test
 
 production:
   <<: *default
-  database: db/car_diagnostics_production.sqlite3
+  database: car_diagnostics_production
+  username: car_diagnostics
+  password: <%= ENV['CAR_DIAGNOSTICS_DATABASE_PASSWORD'] %>

@@ -1,4 +1,8 @@
 class Symptom < ApplicationRecord
+  # Use the PostgreSQL enum type for category
+  SEVERITIES = %w[low medium high critical].freeze
+  FREQUENCIES = %w[constant intermittent occasional once].freeze
+  
   # Associations
   belongs_to :car
   belongs_to :author, class_name: 'User', foreign_key: 'author_id'
@@ -7,6 +11,9 @@ class Symptom < ApplicationRecord
   validates :description, presence: true, length: { minimum: 10, maximum: 1000 }
   validates :car_id, presence: true
   validates :author_id, presence: true
+  # Category is validated by the PostgreSQL enum type
+  validates :severity, inclusion: { in: SEVERITIES, message: "%{value} is not a valid severity" }, allow_blank: true
+  validates :frequency, inclusion: { in: FREQUENCIES, message: "%{value} is not a valid frequency" }, allow_blank: true
   
   # Scopes
   scope :recent, -> { order(created_at: :desc) }
