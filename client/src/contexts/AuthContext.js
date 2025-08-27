@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { authService } from '../services/api';
 
 const AuthContext = createContext();
 
@@ -6,64 +7,73 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Check if user is logged in from localStorage on initial load
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+  const loadUser = useCallback(async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const userData = await authService.getCurrentUser();
+        setUser(userData);
+      }
+    } catch (error) {
+      console.error('Failed to load user:', error);
+      // Clear invalid token
+      localStorage.removeItem('token');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
+
+  useEffect(() => {
+    loadUser();
+  }, [loadUser]);
 
   const login = async (email, password) => {
     try {
-      // In a real app, this would be an API call to your backend
-      // const response = await api.post('/auth/login', { email, password });
-      // const userData = response.data;
+      setLoading(true);
+      const { user, token } = await authService.login(email, password);
       
-      // Mock user data for demo
-      const userData = {
-        id: '1',
-        email,
-        name: email.split('@')[0],
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(email.split('@')[0])}&background=random`,
-      };
+      // Store the token
+      localStorage.setItem('token', token);
       
-      setUser(userData);
-      localStorage.setItem('user', JSON.stringify(userData));
+      // Update user state
+      setUser(user);
       return { success: true };
     } catch (error) {
       console.error('Login failed:', error);
-      return { success: false, error: error.message || 'Login failed' };
+      return { 
+        success: false, 
+        error: typeof error === 'string' ? error : 'Login failed. Please check your credentials.' 
+      };
+    } finally {
+      setLoading(false);
     }
   };
 
   const register = async (email, password, name) => {
     try {
-      // In a real app, this would be an API call to your backend
-      // const response = await api.post('/auth/register', { email, password, name });
-      // const userData = response.data;
+      setLoading(true);
+      const { user, token } = await authService.register(email, password, name);
       
-      // Mock user data for demo
-      const userData = {
-        id: '1',
-        email,
-        name,
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`,
-      };
+      // Store the token
+      localStorage.setItem('token', token);
       
-      setUser(userData);
-      localStorage.setItem('user', JSON.stringify(userData));
+      // Update user state
+      setUser(user);
       return { success: true };
     } catch (error) {
       console.error('Registration failed:', error);
-      return { success: false, error: error.message || 'Registration failed' };
+      return { 
+        success: false, 
+        error: typeof error === 'string' ? error : 'Registration failed. Please try again.' 
+      };
+    } finally {
+      setLoading(false);
     }
   };
 
   const logout = () => {
+    authService.logout();
     setUser(null);
-    localStorage.removeItem('user');
   };
 
   return (

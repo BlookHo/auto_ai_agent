@@ -12,9 +12,10 @@ import {
   Alert,
   Collapse
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useThemeContext } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const Login = () => {
@@ -28,6 +29,8 @@ const Login = () => {
   const { login, register } = useAuth();
   const { theme } = useThemeContext();
   const navigate = useNavigate();
+  const { language } = useLanguage();
+  const { lang } = useParams();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,23 +38,27 @@ const Login = () => {
     setLoading(true);
 
     try {
-      let result;
       if (isLogin) {
-        result = await login(email, password);
+        const result = await login(email, password);
+        if (result && result.success) {
+          navigate(`/${language || lang || 'en'}`);
+        } else {
+          setError(result?.error || 'Invalid email or password');
+        }
       } else {
         if (!name) {
           throw new Error('Name is required');
         }
-        result = await register(email, password, name);
+        const result = await register(email, password, name);
+        if (result && result.success) {
+          navigate(`/${language || lang || 'en'}`);
+        } else {
+          setError(result?.error || 'Registration failed. Please try again.');
+        }
       }
-
-      if (result && result.success) {
-        navigate('/');
-      } else {
-        setError(result?.error || 'Something went wrong');
-      }
-    } catch (err) {
-      setError(err.message || 'Failed to process request');
+    } catch (error) {
+      console.error('Authentication error:', error);
+      setError(error.message || 'An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
     }

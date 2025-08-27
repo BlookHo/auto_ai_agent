@@ -41,6 +41,12 @@ const ProfileMenu = () => {
 
   if (!user) return null;
 
+  const userInitials = user.name 
+    ? user.name.split(' ').map(n => n[0]).join('').toUpperCase()
+    : user.email ? user.email[0].toUpperCase() : 'U';
+
+  const avatarSrc = user.avatar || '';
+
   return (
     <>
       <IconButton
@@ -52,11 +58,16 @@ const ProfileMenu = () => {
         aria-expanded={open ? 'true' : undefined}
       >
         <Avatar 
-          src={user.avatar} 
-          alt={user.name}
-          sx={{ width: 40, height: 40 }}
+          src={avatarSrc}
+          alt={user.name || user.email}
+          sx={{ 
+            width: 32, 
+            height: 32,
+            bgcolor: 'primary.main',
+            color: 'primary.contrastText'
+          }}
         >
-          {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+          {!avatarSrc && userInitials}
         </Avatar>
       </IconButton>
       <Menu
@@ -95,12 +106,14 @@ const ProfileMenu = () => {
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
         <Box sx={{ px: 2, py: 1 }}>
-          <Typography variant="subtitle1" fontWeight={600}>
-            {user.name}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {user.email}
-          </Typography>
+          <Box>
+            <Typography variant="subtitle2" noWrap>
+              {user.name || 'User'}
+            </Typography>
+            <Typography variant="caption" color="text.secondary" noWrap>
+              {user.email}
+            </Typography>
+          </Box>
         </Box>
         <Divider />
         <MenuItem>

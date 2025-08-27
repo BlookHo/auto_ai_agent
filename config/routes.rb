@@ -4,12 +4,16 @@ Rails.application.routes.draw do
   get '/diagnostic/new', to: 'application#index'
   
   # API endpoints
+  # Handle CORS preflight requests
+  match '*all', to: 'application#preflight', via: [:options]
+  
   namespace :api do
     namespace :v1 do
       # Authentication routes
       post 'auth/register', to: 'auth#register'
       post 'auth/login', to: 'auth#login'
       get 'auth/me', to: 'auth#me'
+      match 'auth/*path', to: 'auth#preflight', via: [:options]
       
       # Protected resources
       resources :diagnostics, only: [:index, :create, :show], path: 'diagnostic'

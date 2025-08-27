@@ -24,39 +24,41 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import ProfileMenu from './ProfileMenu';
 import LanguageSwitcher from './LanguageSwitcher';
-import { localizePath } from '../utils/routing';
 
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const { user } = useAuth();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
-  // Navigation items
-  const navItems = useMemo(() => [
-    { path: '/', label: 'nav.home' },
-    { path: '/new', label: 'nav.newDiagnosis', auth: true },
-  ], []);
+  // Get the current path without the language prefix
+  const currentPath = location.pathname.replace(new RegExp(`^/(${['en', 'ru', 'de'].join('|')})`), '') || '/';
   
-  // Check if a path is active (supports language prefixes)
+  // Check if a path is the current active path
   const isActive = (path) => {
-    // Remove language prefix for comparison
-    const currentPath = location.pathname.replace(new RegExp(`^/(${['en', 'ru', 'de'].join('|')})`), '');
-    const normalizedPath = path === '/' ? '' : path;
-    return currentPath === normalizedPath || currentPath === `${normalizedPath}/`;
+    return currentPath === path || currentPath === `${path}/`;
   };
   
   // Generate a localized path for navigation
   const getLocalizedPath = (path) => {
-    return localizePath(path, language);
+    if (!path) return `/${language}`;
+    return `/${language}${path === '/' ? '' : path}`;
   };
+  
+  // Navigation items
+  const navItems = useMemo(() => [
+    { path: '/', label: t('nav.home') },
+    { path: '/new', label: t('nav.newDiagnosis'), auth: true },
+    { path: '/profile', label: t('nav.profile'), auth: true },
+  ], [t]);
   
   // Handle navigation to a path
   const handleNavigate = (path) => {
-    navigate(getLocalizedPath(path));
+    const targetPath = path === '/' ? `/${language}` : `/${language}${path}`;
+    navigate(targetPath);
     if (isMobile) {
       setMobileMenuOpen(false);
     }
@@ -206,9 +208,31 @@ const Navbar = () => {
             gap: '8px',
             alignItems: 'center'
           }}>
-            {/* Language Switcher */}
-            <LanguageSwitcher />
-            
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <LanguageSwitcher />
+              {user ? (
+                <>
+                  <Typography variant="body2" sx={{ color: 'white', mr: 1 }}>
+                    {user.name || user.email}
+                  </Typography>
+                  <ProfileMenu />
+                </>
+              ) : (
+                <Button 
+                  color="inherit" 
+                  component={RouterLink} 
+                  to={getLocalizedPath('/login')}
+                  sx={{ 
+                    ml: 2,
+                    '&:hover': {
+                      backgroundColor: alpha(theme.palette.common.white, 0.1),
+                    },
+                  }}
+                >
+                  Login
+                </Button>
+              )}
+            </Box>
             {/* Navigation Links */}
             {navItems.map((item) => {
               // Skip auth-protected items if user is not logged in

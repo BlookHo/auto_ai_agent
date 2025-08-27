@@ -15,6 +15,22 @@ class ApplicationController < ActionController::Base
     end
   end
   
+  # Handle CORS preflight requests
+  def preflight
+    set_cors_headers
+    render plain: '', content_type: 'text/plain'
+  end
+  
+  # Set CORS headers for all responses
+  def set_cors_headers
+    headers['Access-Control-Allow-Origin'] = 'http://localhost:3033'
+    headers['Access-Control-Allow-Methods'] = 'POST, PUT, DELETE, GET, OPTIONS'
+    headers['Access-Control-Request-Method'] = '*'
+    headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+    headers['Access-Control-Allow-Credentials'] = 'true'
+    headers['Access-Control-Max-Age'] = '600'
+  end
+  
   private
   
   def user_not_authorized(exception)
