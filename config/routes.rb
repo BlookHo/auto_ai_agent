@@ -12,6 +12,8 @@ Rails.application.routes.draw do
       # Authentication routes
       post 'auth/register', to: 'auth#register'
       post 'auth/login', to: 'auth#login'
+      post 'auth/forgot_password', to: 'auth#forgot_password'
+      post 'auth/reset_password', to: 'auth#reset_password'
       get 'auth/me', to: 'auth#me'
       match 'auth/*path', to: 'auth#preflight', via: [:options]
       

@@ -16,7 +16,7 @@ class AddUserIdToCars < ActiveRecord::Migration[7.1]
         role: 'admin',
         name: 'Admin',
         surname: 'User',
-        nickname: 'admin'
+        nick: 'admin'
       )
       Car.update_all(user_id: admin.id)
     end

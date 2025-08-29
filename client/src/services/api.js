@@ -42,24 +42,28 @@ export const authService = {
   login: async (email, password) => {
     try {
       const response = await api.post('/auth/login', { 
-        auth: { email, password } 
+        auth: { 
+          email, 
+          password 
+        }
       });
       return response.data;
     } catch (error) {
+      console.error('Login error:', error);
       throw error.response?.data?.error || 'Login failed';
     }
   },
   
   register: async (email, password, name) => {
     try {
-      const response = await api.post('/api/v1/auth/register', { 
+      const response = await api.post('/auth/register', { 
         user: { 
           email, 
           password, 
-          name, 
-          role: 'user',
-          surname: name,  // Add required fields
-          nick: name      // Add required fields
+          name,
+          role: 'expert',
+          surname: name,  // Required field
+          nick: name      // Required field
         } 
       });
       return response.data;
@@ -81,6 +85,28 @@ export const authService = {
     // Clear token from storage
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+  },
+  
+  forgotPassword: async (email) => {
+    try {
+      const response = await api.post('/auth/forgot_password', { email });
+      return response.data;
+    } catch (error) {
+      throw error.response?.data?.error || 'Failed to send password reset email';
+    }
+  },
+  
+  resetPassword: async (token, password, passwordConfirmation) => {
+    try {
+      const response = await api.post('/auth/reset_password', {
+        token,
+        password,
+        password_confirmation: passwordConfirmation
+      });
+      return response.data;
+    } catch (error) {
+      throw error.response?.data?.error || 'Failed to reset password';
+    }
   }
 };
 

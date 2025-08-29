@@ -3,13 +3,33 @@
 
 puts "Seeding database..."
 
-# Clear existing data (in development only)
+# Clear existing data and reset primary key sequences (in development only)
 if Rails.env.development?
-  puts "Clearing existing data..."
+  puts "Clearing existing data and resetting primary keys..."
+  
+  # Clear data
   [MaintenanceRecord, Diag, Symptom, DiagnosticSession, Car, User].each do |model|
     model.destroy_all
   end
-  puts "Database cleared."
+  
+  # Reset primary key sequences for PostgreSQL
+  if ActiveRecord::Base.connection.adapter_name == 'PostgreSQL'
+    ActiveRecord::Base.connection.tables.each do |t|
+      ActiveRecord::Base.connection.reset_pk_sequence!(t)
+    end
+  # For SQLite
+  elsif ActiveRecord::Base.connection.adapter_name == 'SQLite'
+    ActiveRecord::Base.connection.tables.each do |t|
+      ActiveRecord::Base.connection.execute("DELETE FROM sqlite_sequence WHERE name='#{t}'")
+    end
+  # For MySQL
+  elsif ActiveRecord::Base.connection.adapter_name == 'MySQL2'
+    ActiveRecord::Base.connection.tables.each do |t|
+      ActiveRecord::Base.connection.execute("ALTER TABLE #{t} AUTO_INCREMENT = 1")
+    end
+  end
+  
+  puts "Database cleared and primary keys reset."
 end
 
 # Create Users

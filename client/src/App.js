@@ -9,6 +9,8 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import NewDiagnosis from './pages/NewDiagnosis';
 import Login from './pages/Login';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from './contexts/LanguageContext';
 import './i18n'; // Import i18n configuration
 import { useTranslation } from 'react-i18next';
@@ -151,6 +153,8 @@ const AppContent = () => {
                 } 
               />
               <Route path="login" element={<Login />} />
+              <Route path="forgot-password" element={<ForgotPassword />} />
+              <Route path="reset-password" element={<ResetPassword />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Route>

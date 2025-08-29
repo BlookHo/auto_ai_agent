@@ -2,7 +2,7 @@ module Api
   module V1
     class AuthController < BaseController
       # Skip authentication for these actions
-      skip_before_action :authenticate_request, only: [:login, :register, :preflight]
+      skip_before_action :authenticate_request, only: [:login, :register, :preflight, :forgot_password, :reset_password]
       
       # Skip Pundit callbacks completely for this controller
       skip_after_action :verify_authorized, raise: false
@@ -46,8 +46,10 @@ module Api
       # POST /api/v1/auth/login
       def login
         set_cors_headers
-        email = params.dig(:auth, :email) || params[:email]
-        password = params.dig(:auth, :password) || params[:password]
+        # Handle both formats: {email: 'x', password: 'y'} and {auth: {email: 'x', password: 'y'}}
+        auth_params = params[:auth] || params
+        email = auth_params[:email]&.downcase
+        password = auth_params[:password]
         
         user = User.find_by(email: email)
         
@@ -73,10 +75,44 @@ module Api
         render json: current_user.as_json(only: [:id, :email, :name, :role]).merge(avatar: current_user.avatar_url)
       end
 
+      # POST /api/v1/auth/forgot_password
+      def forgot_password
+        user = User.find_by(email: params[:email].downcase)
+        
+        if user
+          user.generate_password_reset_token!
+          reset_url = "#{ENV['FRONTEND_URL']}/reset-password?token=#{user.reset_password_token}"
+          UserMailer.password_reset(user, reset_url).deliver_now
+        end
+        
+        # Always return success to prevent user enumeration attacks
+        render json: { message: 'If your email exists in our system, you will receive password reset instructions.' }
+      end
+
+      # POST /api/v1/auth/reset_password
+      def reset_password
+        user = User.find_by(reset_password_token: params[:token])
+        
+        if user && user.password_reset_token_valid?
+          if params[:password].blank?
+            return render json: { error: 'Password cannot be blank' }, status: :unprocessable_entity
+          end
+          
+          if user.update(password: params[:password], password_confirmation: params[:password_confirmation])
+            user.clear_password_reset_token!
+            render json: { message: 'Your password has been reset successfully. Please log in with your new password.' }
+          else
+            render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
+          end
+        else
+          render json: { error: 'Invalid or expired password reset token' }, status: :unprocessable_entity
+        end
+      end
+
       private
 
       def user_params
-        params.require(:user).permit(:email, :password, :role, :name)
+        params.require(:user).permit(:email, :password, :password_confirmation, :role, :name)
       end
     end
   end

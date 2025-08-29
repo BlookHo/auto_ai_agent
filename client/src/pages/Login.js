@@ -10,7 +10,8 @@ import {
   InputAdornment,
   IconButton,
   Alert,
-  Collapse
+  Collapse,
+  CircularProgress
 } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -181,8 +182,22 @@ const Login = () => {
                 },
               }}
             >
-              {loading ? 'Processing...' : isLogin ? 'Sign In' : 'Sign Up'}
+              {loading ? <CircularProgress size={24} /> : isLogin ? 'Sign In' : 'Create Account'}
             </Button>
+            {isLogin && (
+              <Box sx={{ textAlign: 'right', mt: 1, mb: 1 }}>
+                <Link 
+                  href={`/${language || lang || 'en'}/forgot-password`}
+                  variant="body2"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate(`/${language || lang || 'en'}/forgot-password`);
+                  }}
+                >
+                  Forgot Password?
+                </Link>
+              </Box>
+            )}
             <Box sx={{ textAlign: 'center', mt: 2 }}>
               <Link 
                 component="button" 

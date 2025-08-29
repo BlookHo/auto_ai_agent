@@ -44,6 +44,27 @@ class User < ApplicationRecord
 
   private
 
+  # Generate a password reset token and set the reset timestamp
+  def generate_password_reset_token!
+    self.reset_password_token = SecureRandom.urlsafe_base64
+    self.reset_password_sent_at = Time.zone.now
+    save(validate: false)
+  end
+
+  # Check if the password reset token is still valid (24 hours)
+  def password_reset_token_valid?
+    reset_password_sent_at && reset_password_sent_at > 2.days.ago
+  end
+
+  # Clear the password reset fields
+  def clear_password_reset_token!
+    self.reset_password_token = nil
+    self.reset_password_sent_at = nil
+    save(validate: false)
+  end
+
+  private
+
   def set_default_role
     self.role ||= 'expert'
   end
