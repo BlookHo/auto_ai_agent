@@ -170,8 +170,8 @@ A web application that enables automotive experts to diagnose vehicle issues usi
 - [x] Set up role-based access control (Pundit)
 - [x] Create user management interface (React)
 - [x] Implement login/logout flow
-- [ ] Add user registration
-- [ ] Implement password reset functionality
+- [x] Add user registration
+- [x] Implement password reset functionality
 
 ### Phase 2: Core Features (Weeks 5-9) - High Priority
 
