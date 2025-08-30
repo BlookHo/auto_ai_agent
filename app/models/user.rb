@@ -17,15 +17,13 @@ class User < ApplicationRecord
   before_validation :set_default_role
 
   def generate_jwt
-    payload = {
+    JwtService.encode({
       user_id: id,
       email: email,
       name: name,
       role: role,
-      avatar: avatar_url,
-      exp: 24.hours.from_now.to_i
-    }
-    JWT.encode(payload, Rails.application.credentials.secret_key_base)
+      avatar: avatar_url
+    })
   end
   
   def avatar_url

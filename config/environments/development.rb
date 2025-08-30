@@ -49,6 +49,36 @@ Rails.application.configure do
   # Change to :null_store to avoid any caching.
   config.cache_store = :memory_store
 
+  # Disable all encryption and session handling
+  config.action_controller.allow_forgery_protection = false
+  config.session_store :disabled
+  
+  # Completely disable MessageEncryptor
+  config.action_dispatch.cookies_serializer = :json
+  config.action_dispatch.use_authenticated_message_encryption = false
+  
+  # Disable encryption in Active Record
+  config.active_record.encryption.primary_key = ''
+  config.active_record.encryption.deterministic_key = ''
+  config.active_record.encryption.key_derivation_salt = ''
+  config.active_record.encryption.support_unencrypted_data = true
+  config.active_record.encryption.validate_column_size = false
+  
+  # Disable all encryption in Action Pack
+  config.action_controller.perform_caching = false
+  config.cache_store = :null_store
+  
+  # Disable encrypted cookies
+  config.action_dispatch.cookies_serializer = :json
+  
+  # Disable all message encryption
+  ActiveSupport.on_load(:action_controller) do
+    ActionController::Parameters.permit_all_parameters = true
+  end
+  
+  # Disable encrypted credentials
+  Rails.application.credentials = ActiveSupport::InheritableOptions.new({})
+
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
 

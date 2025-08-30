@@ -23,6 +23,36 @@ module Finapi
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.1
 
+    # Ensure secret_key_base is set for all environments
+    config.require_master_key = false
+    
+    # Set a fallback secret key base for development and test
+    if Rails.env.development? || Rails.env.test?
+      config.secret_key_base = ENV['SECRET_KEY_BASE'] || 'development_secret_key_1234567890_1234567890_1234567890_1234567890_1234567890_1234567890_1234567890_1234567890_1234567890_1234567890'
+    end
+    
+    # Configure API mode
+    config.api_only = true
+    
+    # Disable all session and encryption handling
+    config.middleware.delete ActionDispatch::Session::CookieStore
+    config.middleware.delete ActionDispatch::Flash
+    config.middleware.delete ActionDispatch::RequestId
+    config.middleware.delete Rack::MethodOverride
+    
+    # Disable all encryption and authentication
+    config.action_controller.allow_forgery_protection = false
+    config.action_controller.perform_caching = false
+    config.action_dispatch.cookies_serializer = :json
+    config.action_dispatch.use_authenticated_message_encryption = false
+    
+    # Disable Active Record encryption
+    config.active_record.encryption.primary_key = ''
+    config.active_record.encryption.deterministic_key = ''
+    config.active_record.encryption.key_derivation_salt = ''
+    config.active_record.encryption.support_unencrypted_data = true
+    config.active_record.encryption.validate_column_size = false
+
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
@@ -31,6 +61,9 @@ module Finapi
     # Add client directory to autoload paths
     config.autoload_paths << Rails.root.join('client/src')
     config.assets.paths << Rails.root.join('client/src/assets')
+    
+# Keep debug exceptions for development
+    config.middleware.use ActionDispatch::DebugExceptions, config.consider_all_requests_local
 
     # Disable unnecessary Rails generators
     config.generators do |g|
