@@ -52,7 +52,7 @@ const Navbar = () => {
   const navItems = useMemo(() => [
     { path: '/', label: t('nav.home') },
     { path: '/new', label: t('nav.newDiagnosis'), auth: true },
-    { path: '/profile', label: t('nav.profile'), auth: true },
+    // Profile link removed from navigation as per requirements
   ], [t]);
   
   // Handle navigation to a path
@@ -96,7 +96,6 @@ const Navbar = () => {
       </Box>
       
       <Divider />
-      
       <List sx={{ flex: 1, overflowY: 'auto' }}>
         {navItems.map((item) => {
           // Skip auth-protected items if user is not logged in
@@ -208,62 +207,33 @@ const Navbar = () => {
             gap: '8px',
             alignItems: 'center'
           }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            {/* Language Switcher - Desktop */}
+            <Box sx={{ mr: 2 }}>
               <LanguageSwitcher />
-              {user ? (
-                <>
-                  <Typography variant="body2" sx={{ color: 'white', mr: 1 }}>
-                    {user.name || user.email}
-                  </Typography>
-                  <ProfileMenu />
-                </>
-              ) : (
-                <Button 
-                  color="inherit" 
-                  component={RouterLink} 
-                  to={getLocalizedPath('/login')}
-                  sx={{ 
-                    ml: 2,
-                    '&:hover': {
-                      backgroundColor: alpha(theme.palette.common.white, 0.1),
-                    },
-                  }}
-                >
-                  Login
-                </Button>
-              )}
             </Box>
-            {/* Navigation Links */}
-            {navItems.map((item) => {
-              // Skip auth-protected items if user is not logged in
-              if (item.auth && !user) return null;
-              
-              return (
-                <Button 
-                  key={item.path}
-                  component={RouterLink}
-                  to={getLocalizedPath(item.path)}
-                  sx={{
-                    color: isActive(item.path) ? 'white' : 'rgba(255, 255, 255, 0.8)',
-                    backgroundColor: isActive(item.path) ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
-                    '&:hover': {
-                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                      color: 'white'
-                    },
-                    borderRadius: '6px',
-                    padding: '8px 16px',
-                    textTransform: 'none',
-                    fontWeight: 500,
-                    fontSize: '0.9375rem',
-                    transition: 'all 0.2s ease-in-out',
-                  }}
-                >
-                  {item.label}
-                </Button>
-              );
-            })}
             
-            <ProfileMenu />
+            {user ? (
+              <>
+                <Typography variant="body2" sx={{ color: 'white', mr: 1 }}>
+                  {user.name || user.email}
+                </Typography>
+                <ProfileMenu />
+              </>
+            ) : (
+              <Button 
+                color="inherit" 
+                component={RouterLink} 
+                to={getLocalizedPath('/login')}
+                sx={{ 
+                  ml: 2,
+                  '&:hover': {
+                    backgroundColor: alpha(theme.palette.common.white, 0.1),
+                  },
+                }}
+              >
+                {t('auth.login')}
+              </Button>
+            )}
           </Box>
         </Toolbar>
       </Container>
