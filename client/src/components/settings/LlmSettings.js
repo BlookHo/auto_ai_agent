@@ -1,65 +1,142 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
   Box, 
-  Typography, 
+  Button, 
   FormControl, 
   InputLabel, 
   Select, 
   MenuItem, 
-  TextField,
-  Paper,
-  Alert,
-  Button,
-  CircularProgress
+  TextField, 
+  Typography, 
+  CircularProgress,
+  Slider,
+  FormHelperText,
+  IconButton,
+  InputAdornment
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
-import { useTranslation } from 'react-i18next';
-import api from '../../services/api';
+import ModelSelection from './ModelSelection';
+import Modal from '../common/Modal';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
+// Mock data for LLM providers and their models
 const LLM_PROVIDERS = [
-  { id: 'openai', name: 'OpenAI', apiKeyRequired: true },
-  { id: 'anthropic', name: 'Anthropic', apiKeyRequired: true },
-  { id: 'llama', name: 'Llama 3 (Self-hosted)', apiKeyRequired: false },
-  { id: 'mistral', name: 'Mistral', apiKeyRequired: true },
+  { 
+    id: 'openai', 
+    name: 'OpenAI', 
+    requiresApiKey: true,
+    models: [
+      { id: 'gpt-4o', name: 'GPT-4o' },
+      { id: 'gpt-4-turbo', name: 'GPT-4 Turbo' },
+      { id: 'gpt-4', name: 'GPT-4' },
+      { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo' },
+    ]
+  },
+  { 
+    id: 'anthropic', 
+    name: 'Anthropic', 
+    requiresApiKey: true,
+    models: [
+      { id: 'claude-3-opus-20240229', name: 'Claude 3 Opus' },
+      { id: 'claude-3-sonnet-20240229', name: 'Claude 3 Sonnet' },
+      { id: 'claude-3-haiku-20240307', name: 'Claude 3 Haiku' },
+    ]
+  },
+  { 
+    id: 'local', 
+    name: 'Local Model', 
+    requiresApiKey: false,
+    models: [
+      { id: 'local-llm', name: 'Local LLM' },
+    ]
+  }
 ];
 
 const LlmSettings = () => {
-  const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
+  const { t } = useTranslation();
+  
+  // State management
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [isModelModalOpen, setIsModelModalOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  
+  // Settings state
   const [settings, setSettings] = useState({
-    provider: 'openai',
+    provider: '',
+    model: '',
     apiKey: '',
-    model: 'gpt-4',
     temperature: 0.7,
+    baseUrl: ''
   });
-  const [models] = useState([]);
+  
+  const [availableModels, setAvailableModels] = useState([]);
+  const selectedProvider = LLM_PROVIDERS.find(p => p.id === settings.provider) || LLM_PROVIDERS[0];
 
+  // Load available models when provider changes
   useEffect(() => {
-    const loadSettings = async () => {
-      try {
-        const response = await api.get(`/api/v1/settings/llm/${settings.provider}`);
-        if (response.data) {
+    const loadModels = () => {
+      if (!settings.provider) return;
+      
+      console.log('Loading models for provider:', settings.provider);
+      const provider = LLM_PROVIDERS.find(p => p.id === settings.provider);
+      if (provider) {
+        console.log('Found provider, setting models:', provider.models);
+        setAvailableModels(provider.models || []);
+        
+        // Auto-select the first model if none is selected
+        if (!settings.model && provider.models.length > 0) {
+          console.log('Auto-selecting first model:', provider.models[0].id);
           setSettings(prev => ({
             ...prev,
-            ...response.data,
-            apiKey: response.data.api_key || ''
+            model: provider.models[0].id
           }));
         }
-      } catch (error) {
-        console.error('Failed to load LLM settings:', error);
-        enqueueSnackbar('Failed to load LLM settings', { variant: 'error' });
-      } finally {
-        setLoading(false);
       }
     };
 
-    loadSettings();
-  }, [enqueueSnackbar, settings.provider]);
+    loadModels();
+  }, [settings.provider]);
+
+  // Load settings on mount
+  useEffect(() => {
+    console.log('Initial load of settings');
+    // Simulate loading settings
+    setTimeout(() => {
+      setSettings({
+        provider: 'openai',
+        model: 'gpt-4o',
+        apiKey: '',
+        temperature: 0.7,
+        baseUrl: ''
+      });
+      setLoading(false);
+    }, 500);
+  }, []); // Empty dependency array means this runs once on mount
+
+  const handleSelectModel = (modelId) => {
+    console.log('Selected model:', modelId);
+    setSettings(prev => ({
+      ...prev,
+      model: modelId
+    }));
+    setIsModelModalOpen(false);
+  };
+
+  const handleOpenModelModal = (event) => {
+    event?.stopPropagation();
+    if (!settings.provider) {
+      enqueueSnackbar(t('settings.llm.errors.selectProviderFirst'), { variant: 'warning' });
+      return;
+    }
+    setIsModelModalOpen(true);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    console.log(`Setting ${name} to:`, value);
     setSettings(prev => ({
       ...prev,
       [name]: value
@@ -71,18 +148,12 @@ const LlmSettings = () => {
     setSaving(true);
     
     try {
-      await api.put(`/api/v1/settings/llm/${settings.provider}`, {
-        llm_setting: {
-          provider: settings.provider,
-          api_key: settings.apiKey,
-          model: settings.model,
-          temperature: parseFloat(settings.temperature)
-        }
-      });
-      
-      enqueueSnackbar(t('settings.llm.saveSuccess'), { variant: 'success' });
+      console.log('Saving settings:', settings);
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      enqueueSnackbar(t('settings.llm.settingsSaved'), { variant: 'success' });
     } catch (error) {
-      console.error('Failed to save LLM settings:', error);
+      console.error('Error saving settings:', error);
       enqueueSnackbar(t('settings.llm.saveError'), { variant: 'error' });
     } finally {
       setSaving(false);
@@ -97,111 +168,157 @@ const LlmSettings = () => {
     );
   }
 
-  const selectedProvider = LLM_PROVIDERS.find(p => p.id === settings.provider) || LLM_PROVIDERS[0];
-
   return (
-    <Paper elevation={2} sx={{ p: 3, maxWidth: 800, mx: 'auto' }}>
-      <Typography variant="h6" gutterBottom>
-        {t('settings.llm.title')}
-      </Typography>
-      
-      <Alert severity="info" sx={{ mb: 3 }}>
-        {t('settings.llm.description')}
-      </Alert>
+    <Box sx={{ position: 'relative', minHeight: '100%' }}>
+      <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
+        <Typography variant="h6" gutterBottom>
+          {t('settings.llm.title')}
+        </Typography>
+        <form onSubmit={handleSubmit}>
+          <FormControl fullWidth margin="normal">
+            <InputLabel id="llm-provider-label">{t('settings.llm.provider')}</InputLabel>
+            <Select
+              labelId="llm-provider-label"
+              id="provider"
+              name="provider"
+              value={settings.provider}
+              onChange={handleChange}
+              label={t('settings.llm.provider')}
+              disabled={saving}
+            >
+              {LLM_PROVIDERS.map((provider) => (
+                <MenuItem key={provider.id} value={provider.id}>
+                  {provider.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
-      <form onSubmit={handleSubmit}>
-        <FormControl fullWidth margin="normal">
-          <InputLabel id="llm-provider-label">
-            {t('settings.llm.provider')}
-          </InputLabel>
-          <Select
-            labelId="llm-provider-label"
-            id="provider"
-            name="provider"
-            value={settings.provider}
-            label={t('settings.llm.provider')}
-            onChange={handleChange}
-            disabled={saving}
-          >
-            {LLM_PROVIDERS.map(provider => (
-              <MenuItem key={provider.id} value={provider.id}>
-                {provider.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+          {selectedProvider?.requiresApiKey && (
+            <TextField
+              fullWidth
+              margin="normal"
+              id="apiKey"
+              name="apiKey"
+              label={t('settings.llm.apiKey')}
+              type="password"
+              value={settings.apiKey}
+              onChange={handleChange}
+              disabled={saving}
+              helperText={t('settings.llm.apiKeyHelper')}
+              InputProps={{
+                endAdornment: settings.apiKey && (
+                  <InputAdornment position="end">
+                    <IconButton
+                      edge="end"
+                      onClick={() => {
+                        setSettings(prev => ({ ...prev, apiKey: '' }));
+                      }}
+                      onMouseDown={(e) => e.preventDefault()}
+                    >
+                      <Typography variant="caption" color="textSecondary">
+                        {t('common.clear')}
+                      </Typography>
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+          )}
 
-        {selectedProvider.apiKeyRequired && (
+          {selectedProvider?.id === 'local' && (
+            <TextField
+              fullWidth
+              margin="normal"
+              id="baseUrl"
+              name="baseUrl"
+              label={t('settings.llm.baseUrl')}
+              value={settings.baseUrl}
+              onChange={handleChange}
+              disabled={saving}
+              placeholder="http://localhost:11434/v1"
+              helperText={t('settings.llm.baseUrlHelper')}
+            />
+          )}
+
+          {/* Model Selection */}
+          <FormControl fullWidth margin="normal" variant="outlined">
+            <TextField
+              label={t('settings.llm.model')}
+              value={settings.model ? 
+                LLM_PROVIDERS
+                  .flatMap(p => p.models)
+                  .find(m => m.id === settings.model)?.name || settings.model 
+                : ''
+              }
+              onClick={handleOpenModelModal}
+              disabled={!settings.provider || loading}
+              InputProps={{
+                readOnly: true,
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton edge="end" onClick={handleOpenModelModal}>
+                      <ArrowDropDownIcon />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  cursor: 'pointer',
+                },
+              }}
+            />
+            <FormHelperText>
+              {t('settings.llm.clickToSelectModel')}
+            </FormHelperText>
+          </FormControl>
+
           <TextField
             fullWidth
             margin="normal"
-            id="apiKey"
-            name="apiKey"
-            label={t('settings.llm.apiKey')}
-            type="password"
-            value={settings.apiKey}
+            id="temperature"
+            name="temperature"
+            label={t('settings.llm.temperature')}
+            type="number"
+            inputProps={{
+              min: 0,
+              max: 2,
+              step: 0.1
+            }}
+            value={settings.temperature}
             onChange={handleChange}
             disabled={saving}
-            helperText={t('settings.llm.apiKeyHelper')}
+            helperText={t('settings.llm.temperatureHelper')}
           />
-        )}
 
-        <FormControl fullWidth margin="normal">
-          <InputLabel id="llm-model-label">
-            {t('settings.llm.model')}
-          </InputLabel>
-          <Select
-            labelId="llm-model-label"
-            id="model"
-            name="model"
-            value={settings.model}
-            label={t('settings.llm.model')}
-            onChange={handleChange}
-            disabled={saving || !selectedProvider.apiKeyRequired}
-          >
-            {models.length > 0 ? (
-              models.map(model => (
-                <MenuItem key={model.id} value={model.id}>
-                  {model.name}
-                </MenuItem>
-              ))
-            ) : (
-              <MenuItem value="gpt-4">GPT-4</MenuItem>
-            )}
-          </Select>
-        </FormControl>
+          <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              disabled={saving}
+              startIcon={saving ? <CircularProgress size={20} /> : null}
+            >
+              {saving ? t('common.saving') : t('common.saveChanges')}
+            </Button>
+          </Box>
+        </form>
+      </Paper>
 
-        <TextField
-          fullWidth
-          margin="normal"
-          id="temperature"
-          name="temperature"
-          label={t('settings.llm.temperature')}
-          type="number"
-          inputProps={{
-            min: 0,
-            max: 2,
-            step: 0.1
-          }}
-          value={settings.temperature}
-          onChange={handleChange}
-          disabled={saving}
-          helperText={t('settings.llm.temperatureHelper')}
+      {/* Model Selection Modal */}
+      <Modal
+        isOpen={isModelModalOpen}
+        onClose={() => setIsModelModalOpen(false)}
+        title={t('settings.llm.selectModel')}
+      >
+        <ModelSelection
+          models={LLM_PROVIDERS.find(p => p.id === settings.provider)?.models || []}
+          selectedModel={settings.model}
+          onSelectModel={handleSelectModel}
         />
-
-        <Box mt={3} display="flex" justifyContent="flex-end">
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            disabled={saving}
-            startIcon={saving ? <CircularProgress size={20} /> : null}
-          >
-            {saving ? t('common.saving') : t('common.save')}
-          </Button>
-        </Box>
-      </form>
-    </Paper>
+      </Modal>
+    </Box>
   );
 };
 

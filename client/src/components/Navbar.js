@@ -22,8 +22,28 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useSnackbar } from 'notistack';
 import ProfileMenu from './ProfileMenu';
 import LanguageSwitcher from './LanguageSwitcher';
+import LlmMenu from './LlmMenu';
+import Modal from './common/Modal';
+import ModelSelection from './settings/ModelSelection';
+
+// Mock data for LLM providers and their models
+const LLM_PROVIDERS = [
+  { 
+    id: 'openai', 
+    name: 'OpenAI', 
+    requiresApiKey: true,
+    models: [
+      { id: 'gpt-4o', name: 'GPT-4o' },
+      { id: 'gpt-4-turbo', name: 'GPT-4 Turbo' },
+      { id: 'gpt-4', name: 'GPT-4' },
+      { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo' },
+    ]
+  },
+  // Add other providers as needed
+];
 
 const Navbar = () => {
   const location = useLocation();
@@ -33,6 +53,9 @@ const Navbar = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isModelModalOpen, setIsModelModalOpen] = useState(false);
+  const [selectedModel, setSelectedModel] = useState('gpt-4o');
+  const { enqueueSnackbar } = useSnackbar();
   
   // Get the current path without the language prefix
   const currentPath = location.pathname.replace(new RegExp(`^/(${['en', 'ru', 'de'].join('|')})`), '') || '/';
@@ -198,6 +221,28 @@ const Navbar = () => {
           >
             AI Car Diagnostics
           </Typography>
+          
+          {/* Main Navigation */}
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 2, ml: 4 }}>
+            <LlmMenu onModelSelect={() => setIsModelModalOpen(true)} />
+          </Box>
+          
+          {/* Model Selection Modal */}
+          <Modal
+            isOpen={isModelModalOpen}
+            onClose={() => setIsModelModalOpen(false)}
+            title="Select Model"
+          >
+            <ModelSelection
+              models={LLM_PROVIDERS[0].models} // Using first provider's models for now
+              selectedModel={selectedModel}
+              onSelectModel={(modelId) => {
+                setSelectedModel(modelId);
+                enqueueSnackbar(`Model changed to: ${modelId}`, { variant: 'success' });
+                setIsModelModalOpen(false);
+              }}
+            />
+          </Modal>
           
           <Box sx={{ flexGrow: 1 }} />
           
