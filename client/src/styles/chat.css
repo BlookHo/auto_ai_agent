@@ -1,3 +1,39 @@
+/* Modal Styles */
+.MuiModal-root {
+  z-index: 9999 !important;
+}
+
+.MuiBackdrop-root {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+}
+
+.MuiDialog-container {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 100vh !important;
+}
+
+.MuiDialog-paper {
+  margin: 16px !important;
+  max-height: 80vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background-color: #2d3748 !important;
+  color: white !important;
+}
+
+.MuiDialogContent-root {
+  overflow-y: auto !important;
+  background-color: #2d3748 !important;
+}
+
+.MuiDialogTitle-root {
+  background-color: #2d3748 !important;
+  color: white !important;
+  border-bottom: 1px solid #4a5568 !important;
+}
+
 /* Modern Chat Interface Styles */
 .chat-container {
   display: flex;
