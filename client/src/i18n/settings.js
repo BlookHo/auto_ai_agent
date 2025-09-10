@@ -28,6 +28,48 @@ export const settingsTranslations = {
         customModelHelper: 'Enter a custom model ID if not listed above',
         modelFeatures: 'Model Features:',
         maxTokens: 'Max tokens:',
+        modal: {
+          title: 'Select AI Model',
+          description: 'Choose your preferred AI model for vehicle diagnostics',
+          searchPlaceholder: 'Search models...',
+          noResults: 'No models found',
+          select: 'Select',
+          cancel: 'Cancel',
+          modelDetails: 'Model Details',
+          capabilities: 'Capabilities',
+          contextWindow: 'Context Window',
+          tokens: 'tokens',
+          lastUpdated: 'Last Updated',
+          provider: 'Provider',
+          version: 'Version',
+          capabilitiesList: {
+            text: 'Text Generation',
+            code: 'Code Generation',
+            vision: 'Vision',
+            tools: 'Tool Use',
+            json: 'JSON Mode',
+            functionCalling: 'Function Calling'
+          },
+          status: {
+            available: 'Available',
+            beta: 'Beta',
+            experimental: 'Experimental',
+            deprecated: 'Deprecated'
+          },
+          pricing: {
+            title: 'Pricing',
+            input: 'Input',
+            output: 'Output',
+            perMillionTokens: '/M tokens'
+          },
+          requirements: 'Requirements',
+          apiKeyRequired: 'API key required',
+          subscriptionRequired: 'Subscription required',
+          freeTierAvailable: 'Free tier available',
+          rateLimited: 'Rate limited',
+          communityAccess: 'Community access',
+          enterpriseOnly: 'Enterprise only'
+        },
         contextWindow: 'Context window:',
         lastUpdated: 'Last updated:',
         rateLimit: 'Rate limit:'
@@ -41,6 +83,172 @@ export const settingsTranslations = {
     }
   },
   // Add other languages as needed
+  ru: {
+    settings: {
+      title: 'Настройки',
+      comingSoon: 'Скоро будет...',
+      tabs: {
+        llm: 'Настройки ИИ',
+        profile: 'Профиль',
+        notifications: 'Уведомления'
+      },
+      llm: {
+        title: 'Настройки модели ИИ',
+        description: 'Настройте предпочитаемую модель ИИ и параметры для диагностики автомобилей.',
+        provider: 'Провайдер ИИ',
+        model: 'Модель',
+        apiKey: 'API ключ',
+        apiKeyHelper: 'Ваш API ключ хранится безопасно и никогда не покидает ваш браузер.',
+        apiKeyRequiredForModels: 'Пожалуйста, введите ваш API ключ, чтобы увидеть доступные модели',
+        failedToLoadModels: 'Не удалось загрузить модели. Пожалуйста, проверьте ваш API ключ и попробуйте снова.',
+        noModelsAvailable: 'Нет доступных моделей',
+        temperature: 'Температура',
+        temperatureHelper: 'Более высокие значения делают вывод более случайным, а более низкие — более сфокусированным и детерминированным (0-2).',
+        saveSuccess: 'Настройки успешно сохранены',
+        saveError: 'Не удалось сохранить настройки',
+        modelLoading: 'Загрузка моделей...',
+        selectModel: 'Выберите модель',
+        customModel: 'Пользовательская модель',
+        customModelHelper: 'Введите ID пользовательской модели, если её нет в списке выше',
+        modelFeatures: 'Возможности модели:',
+        maxTokens: 'Макс. токенов:',
+        contextWindow: 'Окно контекста:',
+        lastUpdated: 'Последнее обновление:',
+        rateLimit: 'Лимит запросов:',
+        modal: {
+          title: 'Выбор модели ИИ',
+          description: 'Выберите предпочитаемую модель ИИ для диагностики автомобилей',
+          searchPlaceholder: 'Поиск моделей...',
+          noResults: 'Модели не найдены',
+          select: 'Выбрать',
+          cancel: 'Отмена',
+          modelDetails: 'Детали модели',
+          capabilities: 'Возможности',
+          contextWindow: 'Окно контекста',
+          tokens: 'токенов',
+          lastUpdated: 'Последнее обновление',
+          provider: 'Провайдер',
+          version: 'Версия',
+          capabilitiesList: {
+            text: 'Генерация текста',
+            code: 'Генерация кода',
+            vision: 'Обработка изображений',
+            tools: 'Работа с инструментами',
+            json: 'Режим JSON',
+            functionCalling: 'Вызов функций'
+          },
+          status: {
+            available: 'Доступно',
+            beta: 'Бета',
+            experimental: 'Экспериментально',
+            deprecated: 'Устарело'
+          },
+          pricing: {
+            title: 'Цены',
+            input: 'Ввод',
+            output: 'Вывод',
+            perMillionTokens: '/М токенов'
+          },
+          requirements: 'Требования',
+          apiKeyRequired: 'Требуется API ключ',
+          subscriptionRequired: 'Требуется подписка',
+          freeTierAvailable: 'Доступен бесплатный тариф',
+          rateLimited: 'Ограничение запросов',
+          communityAccess: 'Доступно сообществу',
+          enterpriseOnly: 'Только для предприятий'
+        }
+      },
+      profile: {
+        title: 'Настройки профиля'
+      },
+      notifications: {
+        title: 'Настройки уведомлений'
+      }
+    }
+  },
+  de: {
+    settings: {
+      title: 'Einstellungen',
+      comingSoon: 'In Kürze verfügbar...',
+      tabs: {
+        llm: 'KI-Einstellungen',
+        profile: 'Profil',
+        notifications: 'Benachrichtigungen'
+      },
+      llm: {
+        title: 'KI-Modell Einstellungen',
+        description: 'Konfigurieren Sie Ihr bevorzugtes KI-Modell und die Einstellungen für die Fahrzeugdiagnose.',
+        provider: 'KI-Anbieter',
+        model: 'Modell',
+        apiKey: 'API-Schlüssel',
+        apiKeyHelper: 'Ihr API-Schlüssel wird sicher gespeichert und verlässt niemals Ihren Browser.',
+        apiKeyRequiredForModels: 'Bitte geben Sie Ihren API-Schlüssel ein, um verfügbare Modelle zu sehen',
+        failedToLoadModels: 'Laden der Modelle fehlgeschlagen. Bitte überprüfen Sie Ihren API-Schlüssel und versuchen Sie es erneut.',
+        noModelsAvailable: 'Keine Modelle verfügbar',
+        temperature: 'Temperatur',
+        temperatureHelper: 'Höhere Werte machen die Ausgabe zufälliger, während niedrigere Werte sie fokussierter und deterministischer machen (0-2).',
+        saveSuccess: 'Einstellungen erfolgreich gespeichert',
+        saveError: 'Fehler beim Speichern der Einstellungen',
+        modelLoading: 'Lade Modelle...',
+        selectModel: 'Modell auswählen',
+        customModel: 'Benutzerdefinierte Modell-ID',
+        customModelHelper: 'Geben Sie eine benutzerdefinierte Modell-ID ein, falls nicht oben aufgeführt',
+        modelFeatures: 'Modellfunktionen:',
+        maxTokens: 'Max. Token:',
+        contextWindow: 'Kontextfenster:',
+        lastUpdated: 'Zuletzt aktualisiert:',
+        rateLimit: 'Anfragelimit:',
+        modal: {
+          title: 'KI-Modell auswählen',
+          description: 'Wählen Sie Ihr bevorzugtes KI-Modell für die Fahrzeugdiagnose',
+          searchPlaceholder: 'Modelle durchsuchen...',
+          noResults: 'Keine Modelle gefunden',
+          select: 'Auswählen',
+          cancel: 'Abbrechen',
+          modelDetails: 'Modell-Details',
+          capabilities: 'Funktionen',
+          contextWindow: 'Kontextfenster',
+          tokens: 'Token',
+          lastUpdated: 'Zuletzt aktualisiert',
+          provider: 'Anbieter',
+          version: 'Version',
+          capabilitiesList: {
+            text: 'Textgenerierung',
+            code: 'Codegenerierung',
+            vision: 'Bildverarbeitung',
+            tools: 'Werkzeugnutzung',
+            json: 'JSON-Modus',
+            functionCalling: 'Funktionsaufrufe'
+          },
+          status: {
+            available: 'Verfügbar',
+            beta: 'Beta',
+            experimental: 'Experimentell',
+            deprecated: 'Veraltet'
+          },
+          pricing: {
+            title: 'Preise',
+            input: 'Eingabe',
+            output: 'Ausgabe',
+            perMillionTokens: '/Mio. Token'
+          },
+          requirements: 'Anforderungen',
+          apiKeyRequired: 'API-Schlüssel erforderlich',
+          subscriptionRequired: 'Abonnement erforderlich',
+          freeTierAvailable: 'Kostenloser Tarif verfügbar',
+          rateLimited: 'Anfragebeschränkung',
+          communityAccess: 'Community-Zugriff',
+          enterpriseOnly: 'Nur für Unternehmen'
+        }
+      },
+      profile: {
+        title: 'Profileinstellungen'
+      },
+      notifications: {
+        title: 'Benachrichtigungseinstellungen'
+      }
+    }
+  },
   es: {
     settings: {
       title: 'Configuración',
