@@ -227,6 +227,43 @@ const Navbar = () => {
             <LlmMenu onModelSelect={() => setIsModelModalOpen(true)} />
           </Box>
           
+          {/* Selected Model Display - Centered */}
+          <Box sx={{ 
+            position: 'absolute',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            display: { xs: 'none', md: 'flex' },
+            alignItems: 'center',
+            gap: 1,
+            bgcolor: 'rgba(255, 255, 255, 0.1)',
+            px: 2,
+            py: 0.75,
+            borderRadius: 2,
+            cursor: 'pointer',
+            '&:hover': {
+              bgcolor: 'rgba(255, 255, 255, 0.15)',
+            },
+          }}
+          onClick={() => setIsModelModalOpen(true)}
+          >
+            <Box sx={{
+              width: 8,
+              height: 8,
+              borderRadius: '50%',
+              bgcolor: 'success.main',
+              mr: 1
+            }} />
+            <Typography variant="subtitle2" sx={{ 
+              color: 'rgba(255, 255, 255, 0.9)',
+              fontWeight: 500,
+              fontSize: '0.875rem',
+              whiteSpace: 'nowrap',
+              textTransform: 'none'
+            }}>
+              {selectedModel}
+            </Typography>
+          </Box>
+          
           {/* Model Selection Modal */}
           <Modal
             isOpen={isModelModalOpen}

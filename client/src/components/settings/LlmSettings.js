@@ -168,10 +168,11 @@ const LlmSettings = () => {
     );
   }
 
+
   return (
     <Box sx={{ position: 'relative', minHeight: '100%' }}>
       <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
-        <Typography variant="h6" gutterBottom>
+        <Typography variant="h6" sx={{ mb: 2 }}>
           {t('settings.llm.title')}
         </Typography>
         <form onSubmit={handleSubmit}>
@@ -313,7 +314,7 @@ const LlmSettings = () => {
         title={t('settings.llm.selectModel')}
       >
         <ModelSelection
-          models={LLM_PROVIDERS.find(p => p.id === settings.provider)?.models || []}
+          models={availableModels}
           selectedModel={settings.model}
           onSelectModel={handleSelectModel}
         />
