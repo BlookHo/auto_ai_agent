@@ -330,7 +330,7 @@ const Navbar = () => {
                 gap: 1,
                 bgcolor: 'rgba(255, 255, 255, 0.1)',
                 px: 2,
-                py: 0.75,
+                py: 0.5,
                 borderRadius: 2,
                 cursor: 'pointer',
                 '&:hover': {

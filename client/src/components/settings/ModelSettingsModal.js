@@ -37,7 +37,7 @@ const ModelSettingsModal = ({ open, onClose, onSave, initialSettings = {} }) => 
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>Conversation Settings</DialogTitle>
       <DialogContent>
-        <Box sx={{ mt: 2 }}>
+        <Box>
           <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 500 }}>
             System prompt
           </Typography>
