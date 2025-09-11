@@ -48,7 +48,29 @@ const Modal = React.forwardRef(({
     };
   }, [isOpen, onClose, handleClickOutside]);
 
-  if (!isOpen) return null;
+  // Keep the modal in the DOM for the exit animation
+  const [isMounted, setIsMounted] = React.useState(false);
+  const [isVisible, setIsVisible] = React.useState(false);
+
+  React.useEffect(() => {
+    if (isOpen) {
+      setIsMounted(true);
+      // Small timeout to allow the DOM to update before starting the animation
+      const timer = setTimeout(() => {
+        setIsVisible(true);
+      }, 10);
+      return () => clearTimeout(timer);
+    } else {
+      setIsVisible(false);
+      // Wait for the animation to complete before unmounting
+      const timer = setTimeout(() => {
+        setIsMounted(false);
+      }, 400);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
+
+  if (!isMounted) return null;
 
   return (
     <Box 
@@ -65,6 +87,8 @@ const Modal = React.forwardRef(({
         zIndex: 1300,
         padding: 2,
         outline: 'none',
+        opacity: isVisible ? 1 : 0,
+        transition: 'opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
       }}
       role="dialog"
       aria-modal="true"
@@ -88,9 +112,11 @@ const Modal = React.forwardRef(({
           boxShadow: 3,
           outline: 'none',
           position: 'absolute',
-          top: '80px', // Position below header
+          top: isVisible ? '80px' : '60px', // Start slightly higher and animate down
           left: '50%',
           transform: 'translateX(-50%)',
+          opacity: isVisible ? 1 : 0,
+          transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
           border: (theme) => `1px solid ${theme.palette.divider}`,
           '@media (max-height: 600px)': {
             top: '20px', // Adjust for smaller screens
@@ -112,7 +138,7 @@ const Modal = React.forwardRef(({
                 : theme.palette.grey[200],
           }}
         >
-          <Typography variant="h6" component="h2">
+          <Typography variant="h5" component="h2" sx={{ fontSize: '1.5rem', fontWeight: 600 }}>
             {title}
           </Typography>
           {showCloseButton && (

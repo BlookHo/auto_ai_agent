@@ -49,39 +49,82 @@ const Home = () => {
   
   return (
     <Box sx={{ 
-      minHeight: 'calc(100vh - 64px)',
+      height: 'calc(100vh - 80px)',
+      minHeight: '500px',
+      maxHeight: 'calc(100vh - 80px)',
+      '&.css-1q20oqd': {
+        pb: 3, // Add bottom padding to the specified element
+      },
+      '& .MuiBox-root': {
+        py: 2, // 16px padding top and bottom
+      },
+      '& .css-giv2cc-MuiTypography-root': {
+        pt: 2, // 16px top padding for specific h6 element
+      },
+      '& .css-quskuc-MuiTypography-root': {
+        pb: 2, // 16px bottom padding for specific h2 element
+      },
       background: 'radial-gradient(circle at 50% 0%, rgba(25, 195, 125, 0.1) 0%, transparent 70%)',
-      pt: { xs: 6, md: 10 },
-      pb: 10,
+      display: 'flex',
+      flexDirection: 'column',
+      overflow: 'hidden',
+      pt: 0
     }}>
-      <Container maxWidth="lg">
+      <Container 
+        maxWidth="lg" 
+        sx={{
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          py: 0,
+          px: { xs: 1, sm: 1.5 },
+          overflow: 'hidden',
+          gap: 0,
+          '& > *': {
+            flexShrink: 1,
+            minHeight: 0,
+            margin: 0,
+            padding: 0,
+          },
+        }}
+      >
         {/* Hero Section */}
-        <Box sx={{ textAlign: 'center', mb: { xs: 8, md: 12 }, px: { xs: 0, sm: 2 } }}>
+        <Box sx={{ 
+          textAlign: 'center',
+          flex: '0 0 auto',
+          pt: 0,
+          pb: 0,
+          my: 0,
+          '& h1': { mt: 0 },
+        }}>
           <Typography 
             variant="h2" 
             component="h1" 
-            gutterBottom sx={{
-              fontSize: { xs: '2.5rem', md: '3.5rem' },
+            gutterBottom 
+            sx={{
+              fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
               fontWeight: 700,
               lineHeight: 1.1,
-              mb: 3,
+              mb: 0,
+              mt: 0,
               background: 'linear-gradient(90deg, #19C37D 0%, #A78BFA 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
-              textAlign: { xs: 'center', md: 'left' },
+              textAlign: 'center',
             }}>
             {t('home.hero.title')}
           </Typography>
           <Typography 
-            variant="h5" 
+            variant="h6" 
             component="p" 
             sx={{ 
               color: 'text.secondary',
-              maxWidth: '720px',
+              maxWidth: '600px',
               mx: 'auto',
-              mb: 4,
-              fontSize: { xs: '1.125rem', md: '1.25rem' },
-              lineHeight: 1.6,
+              mb: 2,
+              fontSize: { xs: '1rem', sm: '1.125rem' },
+              lineHeight: 1.5,
             }}
           >
             {t('home.hero.description')}
@@ -106,8 +149,10 @@ const Home = () => {
                 transform: 'translateY(-2px)',
               },
               transition: 'all 0.3s ease-in-out',
-              minWidth: '220px',
-              height: '52px',
+              minWidth: '200px',
+              height: '48px',
+              mt: 0.5,
+              mx: 'auto',
             }}
           >
             {t('home.hero.cta')}
@@ -115,13 +160,23 @@ const Home = () => {
         </Box>
 
         {/* Features Grid */}
-        <Box sx={{ mt: 8 }}>
+        <Box sx={{ 
+          flex: '0 0 auto',
+          pt: 0,
+          pb: 0,
+          overflow: 'hidden',
+          '& .MuiTypography-h3': {
+            mb: 0.5,
+            fontSize: { xs: '1.4rem', sm: '1.6rem' },
+            mt: 0,
+          },
+        }}>
           <Typography 
             variant="h3" 
             component="h2" 
             sx={{ 
               textAlign: 'center',
-              mb: 6,
+              mb: 2,
               fontSize: { xs: '1.75rem', md: '2rem' },
               fontWeight: 700,
             }}
@@ -129,7 +184,42 @@ const Home = () => {
             {t('home.features.title')}
           </Typography>
           
-          <Grid container spacing={3}>
+          <Grid container spacing={{ xs: 3, sm: 3.5 }} sx={{ 
+            maxHeight: { xs: '45vh', sm: '52vh' },
+            overflow: 'hidden',
+            mt: 2,
+            py: 3,
+            alignItems: 'stretch',
+            '& .MuiGrid-item': {
+              pb: '0 !important',
+              display: 'flex',
+              '& .MuiCard-root': {
+                height: '100%',
+                minHeight: { xs: '200px', sm: '220px' },
+                '& .MuiCardContent-root': {
+                  p: { xs: 2.5, sm: 3.5, pb: 4 },
+                  overflow: 'hidden',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  '& .MuiSvgIcon-root': {
+                    fontSize: '24px',
+                  },
+                  '& h6': {
+                    fontSize: { xs: '0.9375rem', sm: '1rem' },
+                    mb: 0,
+                    lineHeight: 1.4,
+                  },
+                  '& p': {
+                    fontSize: { xs: '0.8125rem', sm: '0.875rem' },
+                    lineHeight: 1.4,
+                    mt: 'auto',
+                    mb: 0,
+                  },
+                },
+              },
+            },
+          }}>
             <Grid item xs={12} sm={6} md={3}>
               <FeatureCard
                 icon={AutoFixHighIcon}

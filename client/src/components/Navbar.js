@@ -106,7 +106,7 @@ const Navbar = () => {
         p: 2,
         borderBottom: (theme) => `1px solid ${theme.palette.divider}`
       }}>
-        <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
+        <Typography variant="h5" component="div" sx={{ fontWeight: 600, fontSize: '1.5rem' }}>
           Menu
         </Typography>
         <IconButton onClick={() => setMobileMenuOpen(false)}>
@@ -146,6 +146,8 @@ const Navbar = () => {
                     sx: {
                       fontWeight: isActive(item.path) ? 600 : 400,
                       color: isActive(item.path) ? 'primary.main' : 'text.primary',
+                      fontSize: '1.1rem',
+                      py: 1
                     }
                   }}
                 />
@@ -180,7 +182,64 @@ const Navbar = () => {
       }}
     >
       <Container maxWidth={false} sx={{ maxWidth: '1600px !important' }}>
-        <Toolbar disableGutters sx={{ minHeight: '64px !important', px: { xs: 2, sm: 3 } }}>
+        <Toolbar 
+          disableGutters 
+          sx={{ 
+            minHeight: '64px !important', 
+            px: { xs: 2, sm: 3 },
+            '& .MuiTypography-root': {
+              fontSize: { xs: '0.95rem', sm: '1.05rem' }, // Slightly larger on desktop
+            },
+            '& .MuiButton-root': {
+              fontSize: '1.15rem',
+              textTransform: 'none',
+              fontWeight: 500,
+              lineHeight: 1.2,
+            },
+            '& .MuiSvgIcon-root': {
+              fontSize: { xs: '1.4rem', sm: '1.5rem' },
+            },
+            // Brand/logo specific styling
+            '& .MuiTypography-h6': {
+              fontSize: { xs: '1.5rem', sm: '1.75rem' },
+              background: (theme) => `linear-gradient(90deg, ${theme.palette.primary.light} 0%, ${theme.palette.secondary.light} 100%)`,
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              textFillColor: 'transparent',
+              textShadow: (theme) => `0 0 8px ${theme.palette.primary.light}40`,
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                background: (theme) => `linear-gradient(90deg, ${theme.palette.primary.light} 0%, ${theme.palette.secondary.light} 100%)`,
+                WebkitBackgroundClip: 'text',
+                backgroundClip: 'text',
+                textShadow: (theme) => `0 0 12px ${theme.palette.primary.light}80`,
+                transform: 'scale(1.02)',
+              },
+              // Ensure good contrast on dark backgrounds
+              '@media (prefers-contrast: more)': {
+                WebkitTextStroke: '0.5px white',
+              }
+            },
+            // Selected model display
+            '& .MuiTypography-subtitle2': {
+              fontSize: '1.15rem',
+              fontWeight: 500,
+            },
+            // User menu items
+            '& .MuiMenuItem-root': {
+              fontSize: '1rem',
+              '& .MuiSvgIcon-root': {
+                fontSize: '1.25rem',
+              }
+            },
+            // Username text
+            '& .MuiTypography-body1': {
+              fontSize: '1.15rem !important',
+              fontWeight: 500,
+            }
+          }}
+        >
           {/* Mobile menu button */}
           <IconButton
             size="large"
@@ -211,7 +270,7 @@ const Navbar = () => {
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               fontWeight: 700,
-              fontSize: '1.5rem',
+              fontSize: '1.75rem',
               fontFamily: 'Söhne, ui-sans-serif, system-ui, -apple-system, sans-serif',
               '&:hover': {
                 opacity: 0.9
@@ -223,7 +282,7 @@ const Navbar = () => {
           </Typography>
           
           {/* Main Navigation */}
-          <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 2, ml: 4 }}>
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 2, ml: 4, '& .MuiButton-root': { fontSize: '1rem' } }}>
             <LlmMenu onModelSelect={() => setIsModelModalOpen(true)} />
           </Box>
           
@@ -256,7 +315,7 @@ const Navbar = () => {
             <Typography variant="subtitle2" sx={{ 
               color: 'rgba(255, 255, 255, 0.9)',
               fontWeight: 500,
-              fontSize: '0.875rem',
+              fontSize: '1rem',
               whiteSpace: 'nowrap',
               textTransform: 'none'
             }}>
@@ -296,7 +355,7 @@ const Navbar = () => {
             
             {user ? (
               <>
-                <Typography variant="body2" sx={{ color: 'white', mr: 1 }}>
+                <Typography variant="body1" sx={{ color: 'white', mr: 1, fontSize: '1rem' }}>
                   {user.name || user.email}
                 </Typography>
                 <ProfileMenu />
@@ -308,6 +367,7 @@ const Navbar = () => {
                 to={getLocalizedPath('/login')}
                 sx={{ 
                   ml: 2,
+                  fontSize: '1rem',
                   '&:hover': {
                     backgroundColor: alpha(theme.palette.common.white, 0.1),
                   },
