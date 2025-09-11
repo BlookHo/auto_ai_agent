@@ -69,7 +69,20 @@ const AppLayout = () => {
   return (
     <div className="App">
       <Navbar />
-      <Box component="main" sx={{ minHeight: 'calc(100vh - 64px)', pt: 8, pb: 4 }}>
+      <Box component="main" sx={{ 
+        height: 'calc(100vh - 64px)',
+        minHeight: 'calc(100vh - 64px)',
+        maxHeight: 'calc(100vh - 64px)',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+        '& .MuiBox-root.css-u7a00a': {
+          marginTop: 0
+        },
+        '& .MuiBox-root.css-54xu33': {
+          paddingTop: 0
+        }
+      }}>
         <Container maxWidth="lg">
           <Suspense fallback={
             <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>

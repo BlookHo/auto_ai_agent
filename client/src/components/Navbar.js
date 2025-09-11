@@ -15,7 +15,9 @@ import {
   Divider,
   useMediaQuery,
   useTheme,
-  alpha
+  alpha,
+  Menu,
+  MenuItem
 } from '@mui/material';
 import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -28,6 +30,7 @@ import LanguageSwitcher from './LanguageSwitcher';
 import LlmMenu from './LlmMenu';
 import Modal from './common/Modal';
 import ModelSelection from './settings/ModelSelection';
+import ModelSettingsModal from './settings/ModelSettingsModal';
 
 // Mock data for LLM providers and their models
 const LLM_PROVIDERS = [
@@ -54,8 +57,33 @@ const Navbar = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isModelModalOpen, setIsModelModalOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [selectedModel, setSelectedModel] = useState('gpt-4o');
+  const [modelMenuAnchor, setModelMenuAnchor] = useState(null);
+  const [modelSettings, setModelSettings] = useState({
+    systemPrompt: '',
+    temperature: 0.2,
+    // Add other settings here as needed
+  });
   const { enqueueSnackbar } = useSnackbar();
+
+  const handleModelMenuOpen = (event) => {
+    setModelMenuAnchor(event.currentTarget);
+  };
+
+  const handleModelMenuClose = () => {
+    setModelMenuAnchor(null);
+  };
+
+  const handleSettingsClick = () => {
+    setIsSettingsModalOpen(true);
+    handleModelMenuClose();
+  };
+
+  const handleSaveSettings = (newSettings) => {
+    setModelSettings(newSettings);
+    enqueueSnackbar('Settings saved successfully', { variant: 'success' });
+  };
   
   // Get the current path without the language prefix
   const currentPath = location.pathname.replace(new RegExp(`^/(${['en', 'ru', 'de'].join('|')})`), '') || '/';
@@ -286,41 +314,80 @@ const Navbar = () => {
             <LlmMenu onModelSelect={() => setIsModelModalOpen(true)} />
           </Box>
           
-          {/* Selected Model Display - Centered */}
+          {/* Selected Model with Dropdown */}
           <Box sx={{ 
             position: 'absolute',
             left: '50%',
             transform: 'translateX(-50%)',
             display: { xs: 'none', md: 'flex' },
             alignItems: 'center',
-            gap: 1,
-            bgcolor: 'rgba(255, 255, 255, 0.1)',
-            px: 2,
-            py: 0.75,
-            borderRadius: 2,
-            cursor: 'pointer',
-            '&:hover': {
-              bgcolor: 'rgba(255, 255, 255, 0.15)',
-            },
-          }}
-          onClick={() => setIsModelModalOpen(true)}
-          >
-            <Box sx={{
-              width: 8,
-              height: 8,
-              borderRadius: '50%',
-              bgcolor: 'success.main',
-              mr: 1
-            }} />
-            <Typography variant="subtitle2" sx={{ 
-              color: 'rgba(255, 255, 255, 0.9)',
-              fontWeight: 500,
-              fontSize: '1rem',
-              whiteSpace: 'nowrap',
-              textTransform: 'none'
-            }}>
-              {selectedModel}
-            </Typography>
+          }}>
+            <Box 
+              onClick={handleModelMenuOpen}
+              sx={{ 
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                bgcolor: 'rgba(255, 255, 255, 0.1)',
+                px: 2,
+                py: 0.5,
+                borderRadius: 2,
+                cursor: 'pointer',
+                '&:hover': {
+                  bgcolor: 'rgba(255, 255, 255, 0.15)',
+                },
+              }}
+            >
+              <Box sx={{
+                width: 8,
+                height: 8,
+                borderRadius: '50%',
+                bgcolor: 'success.main',
+                mr: 1
+              }} />
+              <Typography variant="subtitle2" sx={{ 
+                color: 'rgba(255, 255, 255, 0.9)',
+                fontWeight: 500,
+                fontSize: '1rem',
+                whiteSpace: 'nowrap',
+                textTransform: 'none'
+              }}>
+                {selectedModel}
+              </Typography>
+            </Box>
+            
+            {/* Model Menu */}
+            <Menu
+              anchorEl={modelMenuAnchor}
+              open={Boolean(modelMenuAnchor)}
+              onClose={handleModelMenuClose}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'center',
+              }}
+            >
+              <MenuItem onClick={handleSettingsClick}>
+                <ListItemText>Settings</ListItemText>
+              </MenuItem>
+              <MenuItem onClick={handleModelMenuClose}>
+                <ListItemText>Pricing</ListItemText>
+              </MenuItem>
+              <MenuItem onClick={handleModelMenuClose}>
+                <ListItemText>Addons</ListItemText>
+              </MenuItem>
+            </Menu>
+            
+            {/* Settings Modal */}
+            <ModelSettingsModal
+              open={isSettingsModalOpen}
+              onClose={() => setIsSettingsModalOpen(false)}
+              onSave={handleSaveSettings}
+              initialSettings={modelSettings}
+            />
           </Box>
           
           {/* Model Selection Modal */}

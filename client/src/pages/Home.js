@@ -49,26 +49,31 @@ const Home = () => {
   
   return (
     <Box sx={{ 
-      height: 'calc(100vh - 80px)',
+      height: 'calc(100vh - 64px)', // Match with main content height
       minHeight: '500px',
-      maxHeight: 'calc(100vh - 80px)',
+      maxHeight: 'calc(100vh - 64px)', // Match with main content height
+      overflow: 'hidden',
       '&.css-1q20oqd': {
-        pb: 3, // Add bottom padding to the specified element
+        pb: 2, // Reduced bottom padding
+        pt: 2, // Reduced top padding
       },
       '& .MuiBox-root': {
-        py: 2, // 16px padding top and bottom
+        py: 1, // Reduced padding
       },
       '& .css-giv2cc-MuiTypography-root': {
-        pt: 2, // 16px top padding for specific h6 element
+        pt: 1, // Reduced padding
       },
       '& .css-quskuc-MuiTypography-root': {
-        pb: 2, // 16px bottom padding for specific h2 element
+        pb: 1, // Reduced padding
+      },
+      // Target specific MuiBox-root classes
+      '& .MuiBox-root.css-17ryn8r, & .MuiBox-root.css-3zqrwp, & .MuiBox-root.css-u7a00a': {
+        paddingTop: '32px !important',
+        marginTop: '0 !important'
       },
       background: 'radial-gradient(circle at 50% 0%, rgba(25, 195, 125, 0.1) 0%, transparent 70%)',
       display: 'flex',
-      flexDirection: 'column',
-      overflow: 'hidden',
-      pt: 0
+      flexDirection: 'column'
     }}>
       <Container 
         maxWidth="lg" 
@@ -76,13 +81,20 @@ const Home = () => {
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'space-between',
+          justifyContent: 'flex-start',
           py: 0,
           px: { xs: 1, sm: 1.5 },
           overflow: 'hidden',
           gap: 0,
+          margin: 0,
+          padding: 0,
+          '&.MuiContainer-root': {
+            margin: 0,
+            padding: 0,
+            maxWidth: '100%',
+          },
           '& > *': {
-            flexShrink: 1,
+            flexShrink: 0,
             minHeight: 0,
             margin: 0,
             padding: 0,
