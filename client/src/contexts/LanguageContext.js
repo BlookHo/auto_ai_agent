@@ -56,6 +56,7 @@ export const LanguageProvider = ({ children }) => {
     const currentLang = getCurrentLanguage();
     if (currentLang !== language) {
       setLanguage(currentLang);
+      i18n.changeLanguage(currentLang);
     }
   }, [getCurrentLanguage, language]);
   
@@ -65,6 +66,17 @@ export const LanguageProvider = ({ children }) => {
       const lang = lng.split('-')[0];
       if (lang !== language && SUPPORTED_LANGUAGES.includes(lang)) {
         setLanguage(lang);
+        
+        // Update URL to reflect language change
+        const pathSegments = location.pathname.split('/').filter(Boolean);
+        if (pathSegments.length > 0 && SUPPORTED_LANGUAGES.includes(pathSegments[0])) {
+          pathSegments[0] = lang;
+        } else {
+          pathSegments.unshift(lang);
+        }
+        
+        const newPath = `/${pathSegments.join('/')}${location.search}${location.hash}`;
+        navigate(newPath, { replace: true });
       }
     };
     
@@ -72,7 +84,7 @@ export const LanguageProvider = ({ children }) => {
     return () => {
       i18n.off('languageChanged', handleLanguageChange);
     };
-  }, [language]);
+  }, [language, location.pathname, location.search, location.hash, navigate]);
   
   /**
    * Change the current language

@@ -24,7 +24,18 @@ export const navigationEn = {
   'nav.register': 'Register',
   'nav.help': 'Help',
   'nav.documentation': 'Documentation',
-  'nav.faq': 'FAQ'
+  'nav.faq': 'FAQ',
+  
+  // LLM Menu
+  'llm.selection': 'Model Selection',
+  'llm.currentModel': 'Current Model',
+  'llm.changeModel': 'Change Model',
+  'llm.modelSettings': 'Model Settings',
+  'llm.apiSettings': 'API Settings',
+  'llm.advanced': 'Advanced',
+  'llm.settings': 'Settings',
+  'llm.pricing': 'Pricing',
+  'llm.logs': 'Logs'
 };
 
 export const navigationRu = {
@@ -37,7 +48,7 @@ export const navigationRu = {
   'app.about': 'О нас',
   'app.privacy': 'Конфиденциальность',
   'app.terms': 'Условия использования',
-  'app.copyright': '© {{year}} Авто AI Ассистент. Все права защищены.',
+  'app.copyright': ' {{year}} Авто AI Ассистент. Все права защищены.',
   
   // Navigation
   'nav.home': 'Главная',
@@ -52,7 +63,18 @@ export const navigationRu = {
   'nav.register': 'Регистрация',
   'nav.help': 'Помощь',
   'nav.documentation': 'Документация',
-  'nav.faq': 'ЧаВо'
+  'nav.faq': 'Часто задаваемые вопросы',
+  
+  // LLM Menu
+  'llm.selection': 'Выбор модели',
+  'llm.currentModel': 'Текущая модель',
+  'llm.changeModel': 'Изменить модель',
+  'llm.modelSettings': 'Настройки модели',
+  'llm.apiSettings': 'Настройки API',
+  'llm.advanced': 'Дополнительно',
+  'llm.settings': 'Настройки',
+  'llm.pricing': 'Цены',
+  'llm.logs': 'Логи'
 };
 
 export const navigationDe = {
@@ -80,5 +102,14 @@ export const navigationDe = {
   'nav.register': 'Registrieren',
   'nav.help': 'Hilfe',
   'nav.documentation': 'Dokumentation',
-  'nav.faq': 'FAQ'
+  'nav.faq': 'Häufige Fragen',
+  
+  // LLM Menu
+  'llm.selection': 'Modellauswahl',
+  'llm.currentModel': 'Aktuelles Modell',
+  'llm.changeModel': 'Modell wechseln',
+  'llm.modelSettings': 'Modelleinstellungen',
+  'llm.settings': 'Einstellungen',
+  'llm.pricing': 'Preise',
+  'llm.logs': 'Protokolle'
 };

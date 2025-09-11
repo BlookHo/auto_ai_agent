@@ -22,7 +22,7 @@ const languages = [
 ];
 
 const LanguageSwitcher = () => {
-  const { language: currentLanguage, setLanguage } = useLanguage();
+  const { language: currentLanguage, changeLanguage } = useLanguage();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const theme = useTheme();
@@ -36,7 +36,7 @@ const LanguageSwitcher = () => {
   };
 
   const handleLanguageChange = (lang) => {
-    setLanguage(lang);
+    changeLanguage(lang);
     handleClose();
   };
 
