@@ -54,6 +54,7 @@ const Home = () => {
       maxHeight: 'calc(100vh - 80px)',
       '&.css-1q20oqd': {
         pb: 3, // Add bottom padding to the specified element
+        pt: 4, // 32px top padding
       },
       '& .MuiBox-root': {
         py: 2, // 16px padding top and bottom
@@ -81,6 +82,11 @@ const Home = () => {
           px: { xs: 1, sm: 1.5 },
           overflow: 'hidden',
           gap: 0,
+          marginTop: 0,
+          '&.MuiContainer-root': {
+            marginTop: 0,
+            paddingTop: 0,
+          },
           '& > *': {
             flexShrink: 1,
             minHeight: 0,
