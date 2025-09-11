@@ -12,7 +12,6 @@ import {
   ListItem,
   ListItemButton,
   ListItemText,
-  ListItemIcon,
   Divider,
   useMediaQuery,
   useTheme,
@@ -31,6 +30,7 @@ import LanguageSwitcher from './LanguageSwitcher';
 import LlmMenu from './LlmMenu';
 import Modal from './common/Modal';
 import ModelSelection from './settings/ModelSelection';
+import ModelSettingsModal from './settings/ModelSettingsModal';
 
 // Mock data for LLM providers and their models
 const LLM_PROVIDERS = [
@@ -57,8 +57,14 @@ const Navbar = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isModelModalOpen, setIsModelModalOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [selectedModel, setSelectedModel] = useState('gpt-4o');
   const [modelMenuAnchor, setModelMenuAnchor] = useState(null);
+  const [modelSettings, setModelSettings] = useState({
+    systemPrompt: '',
+    temperature: 0.2,
+    // Add other settings here as needed
+  });
   const { enqueueSnackbar } = useSnackbar();
 
   const handleModelMenuOpen = (event) => {
@@ -69,10 +75,14 @@ const Navbar = () => {
     setModelMenuAnchor(null);
   };
 
-  const handleModelSelect = (modelId) => {
-    setSelectedModel(modelId);
-    enqueueSnackbar(`Model changed to: ${modelId}`, { variant: 'success' });
+  const handleSettingsClick = () => {
+    setIsSettingsModalOpen(true);
     handleModelMenuClose();
+  };
+
+  const handleSaveSettings = (newSettings) => {
+    setModelSettings(newSettings);
+    enqueueSnackbar('Settings saved successfully', { variant: 'success' });
   };
   
   // Get the current path without the language prefix
@@ -360,7 +370,7 @@ const Navbar = () => {
                 horizontal: 'center',
               }}
             >
-              <MenuItem onClick={handleModelMenuClose}>
+              <MenuItem onClick={handleSettingsClick}>
                 <ListItemText>Settings</ListItemText>
               </MenuItem>
               <MenuItem onClick={handleModelMenuClose}>
@@ -370,6 +380,14 @@ const Navbar = () => {
                 <ListItemText>Addons</ListItemText>
               </MenuItem>
             </Menu>
+            
+            {/* Settings Modal */}
+            <ModelSettingsModal
+              open={isSettingsModalOpen}
+              onClose={() => setIsSettingsModalOpen(false)}
+              onSave={handleSaveSettings}
+              initialSettings={modelSettings}
+            />
           </Box>
           
           {/* Model Selection Modal */}
