@@ -5,12 +5,15 @@ import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import { ThemeProvider, useThemeContext } from './contexts/ThemeContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
+import { DiagnosisProvider } from './contexts/DiagnosisContext';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import NewDiagnosis from './pages/NewDiagnosis';
+import DiagnosisPrompt from './components/diagnosis/DiagnosisPrompt';
 import Login from './pages/Login';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import LlmLogsPage from './pages/LlmLogsPage';
 import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from './contexts/LanguageContext';
 import './i18n'; // Import i18n configuration
 import { useTranslation } from 'react-i18next';
@@ -161,48 +164,66 @@ const AppContent = () => {
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
       <LanguageProvider>
-        <Routes>
-          {/* Language-specific routes */}
-          <Route path=":lang" element={<LanguageRoute />}>
-            <Route element={<AppLayout />}>
-              <Route index element={<Home />} />
-              <Route 
-                path="new" 
-                element={
-                  <PrivateRoute>
-                    <NewDiagnosis />
-                  </PrivateRoute>
-                } 
-              />
-              <Route path="login" element={<Login />} />
-              <Route path="forgot-password" element={<ForgotPassword />} />
-              <Route path="reset-password" element={<ResetPassword />} />
-              <Route path="*" element={<NotFound />} />
+        <DiagnosisProvider>
+          <Routes>
+            {/* Language-specific routes */}
+            <Route path=":lang" element={<LanguageRoute />}>
+              <Route element={<AppLayout />}>
+                <Route index element={<Home />} />
+                <Route 
+                  path="new" 
+                  element={
+                    <PrivateRoute>
+                      <NewDiagnosis />
+                    </PrivateRoute>
+                  } 
+                />
+                <Route 
+                  path="diagnose" 
+                  element={
+                    <PrivateRoute>
+                      <DiagnosisPrompt />
+                    </PrivateRoute>
+                  } 
+                />
+                <Route path="login" element={<Login />} />
+                <Route path="forgot-password" element={<ForgotPassword />} />
+                <Route path="reset-password" element={<ResetPassword />} />
+                <Route 
+                  path="llm/logs" 
+                  element={
+                    <PrivateRoute>
+                      <LlmLogsPage />
+                    </PrivateRoute>
+                  } 
+                />
+                <Route path="*" element={<NotFound />} />
+              </Route>
             </Route>
-          </Route>
           
-          {/* Redirect root to default language */}
-          <Route 
-            path="/" 
-            element={
-              <Navigate 
-                to={`/${DEFAULT_LANGUAGE}`} 
-                replace 
-              />
-            } 
-          />
-          
-          {/* Catch-all route for unsupported languages */}
-          <Route 
-            path="*" 
-            element={
-              <Navigate 
-                to={`/${DEFAULT_LANGUAGE}`} 
-                replace 
-              />
-            } 
-          />
-        </Routes>
+            {/* Redirect root to default language */}
+            <Route 
+              path="/" 
+              element={
+                <Navigate 
+                  to={`/${DEFAULT_LANGUAGE}`} 
+                  replace 
+                />
+              } 
+            />
+            
+            {/* Catch-all route for unsupported languages */}
+            <Route 
+              path="*" 
+              element={
+                <Navigate 
+                  to={`/${DEFAULT_LANGUAGE}`} 
+                  replace 
+                />
+              } 
+            />
+          </Routes>
+        </DiagnosisProvider>
       </LanguageProvider>
     </MuiThemeProvider>
   );
