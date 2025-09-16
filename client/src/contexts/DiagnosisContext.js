@@ -28,68 +28,123 @@ export const DiagnosisProvider = ({ children }) => {
     make: '',
     model: '',
     year: '',
-    mileage: ''
+    mileage: '',
+    engineType: '',
+    lastServiceDate: '',
+    recentRepairs: ''
   });
+
+  // Mock AI response generator
+  const generateMockAIResponse = useCallback((userMessage, conversationHistory) => {
+    // Simple state machine for the diagnosis flow
+    const userInput = userMessage.text.toLowerCase();
+    
+    // Check if we're in the initial state
+    if (conversationHistory.length <= 2) {
+      return {
+        text: `I understand you're experiencing an issue with your vehicle. To help diagnose the problem, could you please provide more details about the following?\n\n` +
+              `1. What specific symptoms are you experiencing?\n` +
+              `2. When did you first notice these symptoms?\n` +
+              `3. Are there any warning lights on your dashboard?`,
+        suggestedQuestions: [
+          FOLLOW_UP_QUESTIONS.SYMPTOMS,
+          FOLLOW_UP_QUESTIONS.TRIGGERS,
+          FOLLOW_UP_QUESTIONS.WARNING_LIGHTS
+        ]
+      };
+    }
+    
+    // Check for common symptoms and provide relevant follow-up
+    const commonSymptoms = {
+      'noise': 'Based on the noise you\'re hearing, it could be related to the brakes, suspension, or exhaust system. ',
+      'vibrat': 'Vibrations can indicate wheel balance issues, brake problems, or suspension components. ',
+      'light': 'Warning lights should be addressed promptly. The specific light can help identify the issue. ',
+      'start': 'Starting issues could be related to the battery, starter, or fuel system. ',
+      'brak': 'Brake issues are critical for safety. ',
+      'steer': 'Steering problems could be related to the power steering system or suspension. '
+    };
+    
+    // Find matching symptom
+    let responseText = 'I understand the issue you\'re describing. ';
+    let symptomFound = false;
+    
+    for (const [symptom, message] of Object.entries(commonSymptoms)) {
+      if (userInput.includes(symptom)) {
+        responseText = message;
+        symptomFound = true;
+        break;
+      }
+    }
+    
+    if (!symptomFound) {
+      responseText += 'Could you provide more specific details about the issue? ';
+    }
+    
+    // Add vehicle-specific info if available
+    if (vehicleInfo.make || vehicleInfo.model) {
+      responseText += `For your ${vehicleInfo.year || ''} ${vehicleInfo.make || ''} ${vehicleInfo.model || 'vehicle'}, `;
+    }
+    
+    responseText += 'it would be helpful to know:\n\n' +
+      '1. How long has this been happening?\n' +
+      '2. Does it happen all the time or only under certain conditions?\n' +
+      '3. Have you noticed any other related symptoms?';
+    
+    return {
+      text: responseText,
+      suggestedQuestions: [
+        FOLLOW_UP_QUESTIONS.FREQUENCY,
+        FOLLOW_UP_QUESTIONS.TRIGGERS,
+        'Have you checked the vehicle\'s fluid levels recently?'
+      ]
+    };
+  }, [vehicleInfo]);
 
   const sendMessage = useCallback(async (message) => {
     if (!message.trim()) return;
 
     // Add user message to conversation
     const userMessage = {
-      id: conversation.length + 1,
+      id: Date.now(),
       text: message,
       sender: 'user',
       timestamp: new Date().toISOString()
     };
 
-    setConversation(prev => [...prev, userMessage]);
+    const updatedConversation = [...conversation, userMessage];
+    setConversation(updatedConversation);
     setIsLoading(true);
     setError(null);
 
     try {
-      // TODO: Replace with actual API call
-      // const response = await fetch('/api/diagnose', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'Authorization': `Bearer ${user.token}`
-      // },
-      //   body: JSON.stringify({
-      //     message,
-      //     conversation,
-      //     vehicleInfo,
-      //     systemPrompt: DIAGNOSIS_SYSTEM_PROMPT,
-      //     userPrompt: DIAGNOSIS_USER_PROMPT(message, vehicleInfo)
-      //   })
-      // });
-
-      // if (!response.ok) throw new Error('Failed to get diagnosis');
-      // const data = await response.json();
-
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // This would come from the API in a real implementation
-      const aiResponse = {
-        id: conversation.length + 2,
-        text: 'I understand you\'re experiencing an issue. ' + 
-              'Could you provide more details about when this problem occurs?',
-        sender: 'ai',
-        timestamp: new Date().toISOString(),
-        suggestedQuestions: [
-          FOLLOW_UP_QUESTIONS.FREQUENCY,
-          FOLLOW_UP_QUESTIONS.TRIGGERS,
-          FOLLOW_UP_QUESTIONS.WARNING_LIGHTS
-        ]
-      };
-      
-      setConversation(prev => [...prev, aiResponse]);
-    } catch (err) {
-      console.error('Diagnosis error:', err);
+      // In development, use the mock response generator
+      if (process.env.NODE_ENV === 'development') {
+        // Small delay to simulate API call
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        const { text, suggestedQuestions } = generateMockAIResponse(userMessage, updatedConversation);
+        
+        const aiResponse = {
+          id: Date.now() + 1,
+          text,
+          sender: 'ai',
+          timestamp: new Date().toISOString(),
+          suggestedQuestions: suggestedQuestions || [
+            FOLLOW_UP_QUESTIONS.FREQUENCY,
+            FOLLOW_UP_QUESTIONS.TRIGGERS,
+            'Is there anything else you can tell me about the issue?'
+          ]
+        };
+        
+        // Add AI response to conversation
+        setConversation(prev => [...prev, aiResponse]);
+      }
+    } catch (error) {
+      console.error('Error generating response:', error);
       setError('Failed to get diagnosis. Please try again.');
       
       const errorMessage = {
-        id: conversation.length + 2,
+        id: Date.now() + 1,
         text: 'Sorry, I encountered an error. Please try again later.',
         sender: 'ai',
         timestamp: new Date().toISOString()
@@ -99,7 +154,7 @@ export const DiagnosisProvider = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [conversation]); // Only conversation is used in the active code path
+  }, [conversation, generateMockAIResponse]);
 
   const updateVehicleInfo = useCallback((newInfo) => {
     setVehicleInfo(prev => ({
@@ -127,6 +182,7 @@ export const DiagnosisProvider = ({ children }) => {
     vehicleInfo,
     sendMessage,
     updateVehicleInfo,
+    setVehicleInfo, // Keeping for backward compatibility
     resetConversation
   };
 

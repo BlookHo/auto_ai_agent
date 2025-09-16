@@ -18,6 +18,11 @@ import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from './contexts/LanguageContex
 import './i18n'; // Import i18n configuration
 import { useTranslation } from 'react-i18next';
 
+// Import the test component (only used in development)
+const DiagnosisTester = process.env.NODE_ENV === 'development' 
+  ? React.lazy(() => import('./components/DiagnosisTester')) 
+  : null;
+
 /**
  * A wrapper for routes that require authentication
  */
@@ -197,6 +202,18 @@ const AppContent = () => {
                     </PrivateRoute>
                   } 
                 />
+                {process.env.NODE_ENV === 'development' && (
+                  <Route 
+                    path="diagnosis-tester" 
+                    element={
+                      <PrivateRoute>
+                        <Suspense fallback={<CircularProgress />}>
+                          <DiagnosisTester />
+                        </Suspense>
+                      </PrivateRoute>
+                    } 
+                  />
+                )}
                 <Route path="*" element={<NotFound />} />
               </Route>
             </Route>
