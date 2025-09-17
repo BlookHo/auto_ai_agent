@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { 
   Box, 
   TextField, 
@@ -25,14 +26,16 @@ import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 const DiagnosisPrompt = () => {
+  const [searchParams] = useSearchParams();
+  const isEmbedded = searchParams.get('embedded') === 'true';
   const { 
     conversation, 
     isLoading, 
     error, 
     sendMessage, 
     resetConversation,
-    vehicleInfo,
-    updateVehicleInfo
+    updateVehicleInfo,
+    getConversationHistory
   } = useDiagnosis();
   
   const [input, setInput] = useState('');
@@ -45,6 +48,27 @@ const DiagnosisPrompt = () => {
     mileage: ''
   });
 
+  // Handle messages from parent window when in embedded mode
+  useEffect(() => {
+    if (!isEmbedded) return;
+    
+    const handleMessage = (event) => {
+      // Only accept messages from our domain
+      if (event.origin !== window.location.origin) return;
+      
+      if (event.data.type === 'REQUEST_DIAGNOSIS') {
+        // Send the conversation back to the parent
+        window.parent.postMessage({
+          type: 'DIAGNOSIS_READY',
+          conversation: getConversationHistory()
+        }, window.location.origin);
+      }
+    };
+    
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [isEmbedded, getConversationHistory]);
+  
   // Auto-scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -56,9 +80,15 @@ const DiagnosisPrompt = () => {
     setInput('');
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
   const handleQuickQuestion = (question) => {
     setInput(question);
-    // Auto-send if question is selected
     setTimeout(() => {
       const sendButton = document.getElementById('send-button');
       if (sendButton) sendButton.click();
@@ -77,21 +107,22 @@ const DiagnosisPrompt = () => {
     setShowVehicleForm(false);
   };
 
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
+  const handleVehicleInfoChange = (e) => {
+    const { name, value } = e.target;
+    setLocalVehicleInfo(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   return (
-    <Box sx={{ 
-      display: 'flex', 
-      flexDirection: 'column', 
+    <Box sx={{
+      display: 'flex',
+      flexDirection: 'column',
       height: '100%',
-      maxWidth: '900px',
-      margin: '0 auto',
-      bgcolor: 'background.paper',
+      maxWidth: '100%',
+      mx: 'auto',
+      bgcolor: 'background.default',
       borderRadius: 2,
       overflow: 'hidden',
       boxShadow: 3
@@ -99,88 +130,75 @@ const DiagnosisPrompt = () => {
       {/* Header */}
       <Box sx={{ 
         p: 2, 
-        borderBottom: '1px solid',
-        borderColor: 'divider',
         bgcolor: 'primary.main',
         color: 'primary.contrastText',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <SmartToyIcon />
-          <Typography variant="h6">Vehicle Diagnosis Assistant</Typography>
-        </Box>
+        <Typography variant="h6" component="h2">
+          Vehicle Diagnosis Assistant
+        </Typography>
         <Box>
-          <Tooltip title="Vehicle Info">
-            <IconButton 
-              onClick={() => setShowVehicleForm(!showVehicleForm)}
-              color="inherit"
-              size="small"
-              sx={{ ml: 1 }}
-            >
-              <InfoIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="New Chat">
+          <Tooltip title="Reset Conversation">
             <IconButton 
               onClick={handleReset}
               color="inherit"
               size="small"
+              sx={{ mr: 1 }}
             >
               <RestartAltIcon />
             </IconButton>
           </Tooltip>
+          <Tooltip title="Vehicle Information">
+            <IconButton 
+              onClick={() => setShowVehicleForm(!showVehicleForm)}
+              color="inherit"
+              size="small"
+            >
+              <InfoIcon />
+            </IconButton>
+          </Tooltip>
         </Box>
       </Box>
-      
+
       {/* Vehicle Info Form */}
       <Fade in={showVehicleForm}>
-        <Box sx={{ 
-          p: 2, 
-          bgcolor: 'background.paper',
-          borderBottom: '1px solid',
-          borderColor: 'divider'
-        }}>
+        <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
           <form onSubmit={handleVehicleInfoSubmit}>
-            <Box sx={{ 
-              display: 'grid', 
-              gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
-              gap: 2,
-              mb: 2
-            }}>
+            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 2 }}>
               <TextField
+                name="make"
                 label="Make"
                 value={localVehicleInfo.make}
-                onChange={(e) => setLocalVehicleInfo({...localVehicleInfo, make: e.target.value})}
+                onChange={handleVehicleInfoChange}
                 size="small"
-                fullWidth
+                required
               />
               <TextField
+                name="model"
                 label="Model"
                 value={localVehicleInfo.model}
-                onChange={(e) => setLocalVehicleInfo({...localVehicleInfo, model: e.target.value})}
+                onChange={handleVehicleInfoChange}
                 size="small"
-                fullWidth
+                required
               />
               <TextField
+                name="year"
                 label="Year"
                 type="number"
                 value={localVehicleInfo.year}
-                onChange={(e) => setLocalVehicleInfo({...localVehicleInfo, year: e.target.value})}
+                onChange={handleVehicleInfoChange}
                 size="small"
-                fullWidth
+                inputProps={{ min: 1900, max: new Date().getFullYear() + 1 }}
               />
               <TextField
+                name="mileage"
                 label="Mileage"
                 type="number"
                 value={localVehicleInfo.mileage}
-                onChange={(e) => setLocalVehicleInfo({...localVehicleInfo, mileage: e.target.value})}
+                onChange={handleVehicleInfoChange}
                 size="small"
-                fullWidth
-                InputProps={{
-                  endAdornment: <Typography variant="caption">miles</Typography>
-                }}
               />
             </Box>
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
@@ -191,7 +209,7 @@ const DiagnosisPrompt = () => {
                 Cancel
               </Button>
               <Button 
-                type="submit" 
+                type="submit"
                 variant="contained" 
                 size="small"
                 disabled={!localVehicleInfo.make || !localVehicleInfo.model}
@@ -233,7 +251,11 @@ const DiagnosisPrompt = () => {
                       <SmartToyIcon fontSize="small" />
                     </Avatar>
                   ) : (
-                    <Avatar sx={{ width: 32, height: 32 }}>
+                    <Avatar sx={{ 
+                      bgcolor: 'secondary.main',
+                      width: 32,
+                      height: 32
+                    }}>
                       <AccountCircle fontSize="small" />
                     </Avatar>
                   )}
@@ -283,32 +305,23 @@ const DiagnosisPrompt = () => {
               
               {/* Suggested questions */}
               {message.sender === 'ai' && message.suggestedQuestions && (
-                <Box sx={{ 
-                  display: 'flex', 
-                  flexWrap: 'wrap', 
-                  gap: 1, 
-                  px: 1,
-                  pl: 7,
-                  mb: 2
-                }}>
-                  {message.suggestedQuestions.map((question, idx) => (
-                    <Chip
-                      key={idx}
-                      label={question}
-                      onClick={() => handleQuickQuestion(question)}
-                      size="small"
-                      icon={<HelpOutlineIcon fontSize="small" />}
-                      sx={{
-                        borderRadius: 1,
-                        bgcolor: 'action.selected',
-                        '&:hover': {
-                          bgcolor: 'action.hover',
-                          cursor: 'pointer'
-                        }
-                      }}
-                    />
-                  ))}
-                </Box>
+                <ListItem sx={{ pt: 0, pb: 2, pl: 7 }}>
+                  <Box sx={{ 
+                    display: 'flex', 
+                    flexWrap: 'wrap', 
+                    gap: 1,
+                    width: '100%'
+                  }}>
+                    {message.suggestedQuestions.map((question, idx) => (
+                      <Chip
+                        key={idx}
+                        label={question}
+                        onClick={() => handleQuickQuestion(question)}
+                        sx={{ cursor: 'pointer' }}
+                      />
+                    ))}
+                  </Box>
+                </ListItem>
               )}
             </React.Fragment>
           ))}
@@ -337,21 +350,44 @@ const DiagnosisPrompt = () => {
           
           <div ref={messagesEndRef} />
         </List>
+      </Box>
+
+      {/* Input Area */}
+      <Box sx={{ 
+        p: 2, 
+        borderTop: 1, 
+        borderColor: 'divider',
+        bgcolor: 'background.paper'
+      }}>
+        <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-end' }}>
+          <TextField
+            fullWidth
+            multiline
+            maxRows={4}
+            variant="outlined"
+            placeholder="Describe your vehicle issue..."
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            disabled={isLoading}
+          />
+          <Button
+            id="send-button"
+            variant="contained"
+            color="primary"
+            onClick={handleSend}
+            disabled={!input.trim() || isLoading}
+            sx={{ minWidth: '56px', height: '56px' }}
+          >
+            {isLoading ? <CircularProgress size={24} /> : <SendIcon />}
+          </Button>
+        </Box>
         
         {/* Quick Tips */}
         {conversation.length <= 1 && (
-          <Box sx={{ 
-            mt: 'auto',
-            p: 2,
-            bgcolor: 'background.paper',
-            borderRadius: 2,
-            border: '1px solid',
-            borderColor: 'divider',
-            mb: 2
-          }}>
-            <Typography variant="subtitle2" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <InfoIcon color="primary" fontSize="small" />
-              Quick Tips
+          <Box sx={{ mt: 2, pt: 1, borderTop: 1, borderColor: 'divider' }}>
+            <Typography variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1 }}>
+              <HelpOutlineIcon fontSize="small" /> Try asking:
             </Typography>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
               {[
@@ -376,97 +412,6 @@ const DiagnosisPrompt = () => {
                 />
               ))}
             </Box>
-          </Box>
-        )}
-      </Box>
-      
-      {/* Input Area */}
-      <Box sx={{ 
-        p: 2, 
-        borderTop: '1px solid',
-        borderColor: 'divider',
-        bgcolor: 'background.paper',
-        position: 'relative'
-      }}>
-        <Box 
-          component="form" 
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSend();
-          }}
-          sx={{ display: 'flex', gap: 1, alignItems: 'flex-end' }}
-        >
-          <TextField
-            fullWidth
-            variant="outlined"
-            placeholder={
-              vehicleInfo.make && vehicleInfo.model 
-                ? `Describe the issue with your ${vehicleInfo.year} ${vehicleInfo.make} ${vehicleInfo.model}...`
-                : 'Describe your vehicle issue...'
-            }
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={handleKeyPress}
-            disabled={isLoading}
-            multiline
-            maxRows={4}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                borderRadius: 2,
-                bgcolor: 'background.paper',
-                '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'primary.main'
-                },
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'primary.main',
-                  borderWidth: '1px'
-                }
-              }
-            }}
-          />
-          <Button
-            id="send-button"
-            type="submit"
-            variant="contained"
-            color="primary"
-            disabled={!input.trim() || isLoading}
-            sx={{ 
-              minWidth: '48px',
-              width: '48px',
-              height: '48px',
-              borderRadius: '50%',
-              p: 0,
-              '&:hover': {
-                transform: 'scale(1.05)'
-              },
-              transition: 'transform 0.2s'
-            }}
-          >
-            {isLoading ? (
-              <CircularProgress size={24} color="inherit" />
-            ) : (
-              <SendIcon />
-            )}
-          </Button>
-        </Box>
-        
-        {/* Vehicle info chip */}
-        {(vehicleInfo.make || vehicleInfo.model) && (
-          <Box sx={{ mt: 1, display: 'flex', justifyContent: 'center' }}>
-            <Chip
-              label={`${vehicleInfo.year || ''} ${vehicleInfo.make || ''} ${vehicleInfo.model || ''} ${vehicleInfo.mileage ? `• ${vehicleInfo.mileage} mi` : ''}`.trim()}
-              size="small"
-              onDelete={() => setShowVehicleForm(true)}
-              sx={{ 
-                maxWidth: '100%',
-                '& .MuiChip-label': {
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  pr: 0.5
-                }
-              }}
-            />
           </Box>
         )}
       </Box>
