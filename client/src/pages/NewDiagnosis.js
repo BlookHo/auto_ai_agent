@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import { useAuth } from '../contexts/AuthContext';
@@ -12,7 +12,6 @@ const NewDiagnosis = () => {
 
   const [symptoms, setSymptoms] = useState('');
   const [isAssistantOpen, setIsAssistantOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [vehicleInfo, setVehicleInfo] = useState({ 
     make: '', 
     model: '', 
@@ -20,7 +19,6 @@ const NewDiagnosis = () => {
     vin: '', 
     mileage: '' 
   });
-  const messagesEndRef = useRef(null);
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -194,7 +192,7 @@ const NewDiagnosis = () => {
             open={isAssistantOpen}
             onClose={handleCloseAssistant}
             onUseDiagnosis={handleUseDiagnosis}
-            isLoading={isLoading}
+            isLoading={false}
             initialMessages={[
               {
                 id: 1,
