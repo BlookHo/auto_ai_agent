@@ -42,7 +42,7 @@ const Login = () => {
       if (isLogin) {
         const result = await login(email, password);
         if (result && result.success) {
-          navigate(`/${language || lang || 'en'}`);
+          navigate(`/${language || lang || 'en'}`, { replace: true });
         } else {
           setError(result?.error || 'Invalid email or password');
         }
@@ -52,7 +52,7 @@ const Login = () => {
         }
         const result = await register(email, password, name);
         if (result && result.success) {
-          navigate(`/${language || lang || 'en'}`);
+          navigate(`/${language || lang || 'en'}`, { replace: true });
         } else {
           setError(result?.error || 'Registration failed. Please try again.');
         }

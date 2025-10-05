@@ -5,16 +5,14 @@ import {
   MenuItem, 
   ListItemIcon, 
   ListItemText,
-  Divider,
   Box
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import SettingsIcon from '@mui/icons-material/Settings';
 import StorageIcon from '@mui/icons-material/Storage';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useLanguage } from '../contexts/LanguageContext';
+import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from '../contexts/LanguageContext';
 
 const LlmMenu = ({ onModelSelect }) => {
   const { t } = useLanguage();
@@ -31,16 +29,21 @@ const LlmMenu = ({ onModelSelect }) => {
     setAnchorEl(null);
   };
 
-  const handleMenuItemClick = (item) => {
-    if (item.path) {
-      if (item.path === '/llm/selection') {
-        // Handle model selection directly if needed
-        if (onModelSelect) {
-          onModelSelect();
-        }
-      } else {
-        navigate(item.path);
+  const handleMenuItemClick = (path) => {
+    if (path === '/llm/selection') {
+      // Handle model selection directly if needed
+      if (onModelSelect) {
+        onModelSelect();
       }
+    } else {
+      // Get current language from URL or use default
+      const pathSegments = window.location.pathname.split('/').filter(Boolean);
+      const currentLang = pathSegments.length > 0 && SUPPORTED_LANGUAGES.includes(pathSegments[0]) 
+        ? pathSegments[0] 
+        : DEFAULT_LANGUAGE;
+      
+      // Navigate with language prefix
+      navigate(`/${currentLang}${path}`);
     }
     handleClose();
   };
@@ -50,16 +53,6 @@ const LlmMenu = ({ onModelSelect }) => {
       text: t('llm.selection', 'Model Selection'), 
       icon: <StorageIcon fontSize="small" />,
       path: '/llm/selection'
-    },
-    { 
-      text: t('llm.settings', 'Settings'), 
-      icon: <SettingsIcon fontSize="small" />,
-      path: '/llm/settings'
-    },
-    { 
-      text: t('llm.pricing', 'Pricing'), 
-      icon: <AttachMoneyIcon fontSize="small" />,
-      path: '/llm/pricing'
     },
     { 
       text: t('llm.logs', 'Logs'), 
@@ -108,16 +101,17 @@ const LlmMenu = ({ onModelSelect }) => {
           horizontal: 'left',
         }}
       >
-        {menuItems.map((item, index) => (
-          <div key={item.path}>
-            {index > 0 && <Divider />}
-            <MenuItem onClick={() => handleMenuItemClick(item)}>
-              <ListItemIcon>
-                {item.icon}
-              </ListItemIcon>
-              <ListItemText>{item.text}</ListItemText>
-            </MenuItem>
-          </div>
+        {menuItems.map((item) => (
+          <MenuItem 
+            key={item.path} 
+            onClick={() => handleMenuItemClick(item.path)}
+            sx={{ py: 1.5, px: 2 }}
+          >
+            <ListItemIcon sx={{ minWidth: 36 }}>
+              {item.icon}
+            </ListItemIcon>
+            <ListItemText primary={item.text} />
+          </MenuItem>
         ))}
       </Menu>
     </Box>
