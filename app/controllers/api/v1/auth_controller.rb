@@ -61,10 +61,19 @@ module Api
             'Access-Control-Expose-Headers' => 'Authorization',
             'Authorization' => "Bearer #{token}"
           )
-          render json: { 
-            user: user.as_json(only: [:id, :email, :name, :role]).merge(avatar: user.avatar_url),
-            token: token 
+          
+          user_data = {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+            avatar: user.avatar_url
           }
+          
+          render json: { 
+            user: user_data,
+            token: token 
+          }, status: :ok
         else
           render json: { error: 'Invalid email or password' }, status: :unauthorized
         end

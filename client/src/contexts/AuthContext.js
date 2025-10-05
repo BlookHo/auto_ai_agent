@@ -6,6 +6,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [authenticating, setAuthenticating] = useState(false);
 
   const loadUser = useCallback(async () => {
     try {
@@ -29,15 +30,19 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      setLoading(true);
-      const { user, token } = await authService.login(email, password);
+      setAuthenticating(true);
+      const response = await authService.login(email, password);
       
-      // Store the token
-      localStorage.setItem('token', token);
-      
-      // Update user state
-      setUser(user);
-      return { success: true };
+      if (response && response.user && response.token) {
+        // Store the token
+        localStorage.setItem('token', response.token);
+        
+        // Update user state
+        setUser(response.user);
+        return { success: true };
+      } else {
+        throw new Error('Invalid response from server');
+      }
     } catch (error) {
       console.error('Login failed:', error);
       return { 
@@ -45,21 +50,25 @@ export const AuthProvider = ({ children }) => {
         error: typeof error === 'string' ? error : 'Login failed. Please check your credentials.' 
       };
     } finally {
-      setLoading(false);
+      setAuthenticating(false);
     }
   };
 
   const register = async (email, password, name) => {
     try {
-      setLoading(true);
-      const { user, token } = await authService.register(email, password, name);
+      setAuthenticating(true);
+      const response = await authService.register(email, password, name);
       
-      // Store the token
-      localStorage.setItem('token', token);
-      
-      // Update user state
-      setUser(user);
-      return { success: true };
+      if (response && response.user && response.token) {
+        // Store the token
+        localStorage.setItem('token', response.token);
+        
+        // Update user state
+        setUser(response.user);
+        return { success: true };
+      } else {
+        throw new Error('Invalid response from server');
+      }
     } catch (error) {
       console.error('Registration failed:', error);
       return { 
@@ -67,7 +76,7 @@ export const AuthProvider = ({ children }) => {
         error: typeof error === 'string' ? error : 'Registration failed. Please try again.' 
       };
     } finally {
-      setLoading(false);
+      setAuthenticating(false);
     }
   };
 
