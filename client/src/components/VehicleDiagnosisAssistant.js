@@ -232,9 +232,4 @@ VehicleDiagnosisAssistant.propTypes = {
   isLoading: PropTypes.bool
 };
 
-VehicleDiagnosisAssistant.defaultProps = {
-  initialMessages: [],
-  isLoading: false
-};
-
 export default React.memo(VehicleDiagnosisAssistant);

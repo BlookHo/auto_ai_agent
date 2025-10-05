@@ -39,7 +39,8 @@ const NewDiagnosis = () => {
     setSymptoms(e.target.value);
   };
 
-  const handleOpenAssistant = () => {
+  const handleOpenAssistant = (e) => {
+    e.currentTarget.blur(); // Remove focus to prevent aria-hidden warning
     setIsAssistantOpen(true);
   };
 
@@ -197,7 +198,8 @@ const NewDiagnosis = () => {
               {
                 id: 1,
                 role: 'assistant',
-                content: 'Hello! I\'m here to help diagnose your vehicle. Please describe the issues you\'re experiencing in detail.'
+                content: 'Hello! I\'m here to help diagnose your vehicle. Please describe the issues you\'re experiencing in detail.',
+                timestamp: new Date().toISOString()
               }
             ]}
           />
